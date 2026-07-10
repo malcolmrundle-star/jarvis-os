@@ -1,43 +1,62 @@
-const time = document.getElementById("time");
+const timeElement = document.getElementById("time");
 const core = document.getElementById("core");
-const state = document.querySelector(".state");
+const stateLabel = document.querySelector(".state");
+const instruction = document.querySelector(".instruction");
 
-const modes = [
+const states = [
   "ONLINE",
   "LISTENING",
   "THINKING",
   "RESPONDING"
 ];
 
-let index = 0;
-let timeout;
+let currentState = 0;
+let resetTimer;
 
 function updateClock() {
   const now = new Date();
 
-  time.textContent = now.toLocaleTimeString([], {
+  timeElement.textContent = now.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit"
-  }).toLowerCase();
+  });
 }
 
-function setMode(mode) {
+function setState(state) {
 
-  state.textContent = mode;
+  stateLabel.textContent = state;
 
-  core.dataset.state = mode.toLowerCase();
+  core.dataset.state = state.toLowerCase();
 
-  clearTimeout(timeout);
+  switch (state) {
 
-  if (mode !== "ONLINE") {
+    case "ONLINE":
+      instruction.textContent = "TAP CORE TO ACTIVATE";
+      break;
 
-    timeout = setTimeout(() => {
+    case "LISTENING":
+      instruction.textContent = "LISTENING...";
+      break;
 
-      index = 0;
+    case "THINKING":
+      instruction.textContent = "PROCESSING";
+      break;
 
-      state.textContent = "ONLINE";
+    case "RESPONDING":
+      instruction.textContent = "RESPONDING";
+      break;
 
-      core.dataset.state = "online";
+  }
+
+  clearTimeout(resetTimer);
+
+  if (state !== "ONLINE") {
+
+    resetTimer = setTimeout(() => {
+
+      currentState = 0;
+
+      setState("ONLINE");
 
     },3000);
 
@@ -47,15 +66,15 @@ function setMode(mode) {
 
 core.addEventListener("click",()=>{
 
-  index++;
+  currentState++;
 
-  if(index>=modes.length){
+  if(currentState>=states.length){
 
-    index=1;
+    currentState=1;
 
   }
 
-  setMode(modes[index]);
+  setState(states[currentState]);
 
   if(navigator.vibrate){
 
@@ -69,4 +88,4 @@ updateClock();
 
 setInterval(updateClock,1000);
 
-setMode("ONLINE");
+setState("ONLINE");
