@@ -1,6 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
   const REMINDERS_KEY = "jarvis-reminders-v1";
+  
+const systemPanelClose =
+  document.getElementById("system-panel-close");
 
+const systemPanelTitle =
+  document.getElementById("system-panel-title");
   const timeElement =
     document.getElementById("time");
 
