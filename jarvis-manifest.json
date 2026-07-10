@@ -1,0 +1,9 @@
+{
+  "name": "JARVIS OS",
+  "version": "2.0.0",
+  "runtime": "scriptable",
+  "compatible": true,
+  "minimumScriptableVersion": "1.7",
+  "entryFile": "jarvis-offline.js",
+  "updatedAt": "2026-07-11"
+}
