@@ -191,45 +191,41 @@ const systemPanelTitle =
   }
 
   function showDiagnostics() {
-    const reminders =
-      loadSavedReminders();
+  const reminders = loadSavedReminders();
 
-    systemPanelContent.innerHTML = `
-      <div class="diagnostic-row">
-        <span>CORE</span>
-        <span class="diagnostic-value">
-          ONLINE
-        </span>
-      </div>
-
-      <div class="diagnostic-row">
-        <span>MEMORY</span>
-        <span class="diagnostic-value">
-          ONLINE
-        </span>
-      </div>
-
-      <div class="diagnostic-row">
-        <span>REMINDERS</span>
-        <span class="diagnostic-value">
-          ${reminders.length} LOADED
-        </span>
-      </div>
-
-      <div class="diagnostic-row">
-        <span>CALENDAR</span>
-        <span>NOT CONNECTED</span>
-      </div>
-
-      <div class="diagnostic-row">
-        <span>OUTLOOK</span>
-        <span>NOT CONNECTED</span>
-      </div>
-    `;
-
-    systemPanel.hidden =
-      !systemPanel.hidden;
+  if (systemPanelTitle) {
+    systemPanelTitle.textContent = "DIAGNOSTICS";
   }
+
+  systemPanelContent.innerHTML = `
+    <div class="diagnostic-row">
+      <span>CORE</span>
+      <span class="diagnostic-value">ONLINE</span>
+    </div>
+
+    <div class="diagnostic-row">
+      <span>MEMORY</span>
+      <span class="diagnostic-value">ONLINE</span>
+    </div>
+
+    <div class="diagnostic-row">
+      <span>REMINDERS</span>
+      <span class="diagnostic-value">${reminders.length} LOADED</span>
+    </div>
+
+    <div class="diagnostic-row">
+      <span>CALENDAR</span>
+      <span>NOT CONNECTED</span>
+    </div>
+
+    <div class="diagnostic-row">
+      <span>OUTLOOK</span>
+      <span>NOT CONNECTED</span>
+    </div>
+  `;
+
+  systemPanel.hidden = false;
+}
 
   function showServices() {
     systemPanelContent.innerHTML = `
