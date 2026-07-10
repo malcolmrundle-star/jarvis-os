@@ -2,8 +2,15 @@ const timeElement = document.getElementById("time");
 const core = document.getElementById("core");
 const stateLabel = document.querySelector(".state");
 const instruction = document.querySelector(".instruction");
-const taskPanel = document.getElementById("task-panel");
+
+const commandPanel = document.getElementById("command-panel");
+const commandForm = document.getElementById("command-form");
+const commandInput = document.getElementById("command-input");
+
+const taskResult = document.getElementById("task-result");
 const taskText = document.getElementById("task-text");
+
+let busy = false;
 
 function updateClock() {
   const now = new Date();
@@ -20,36 +27,49 @@ function setState(nextState) {
 
   const messages = {
     ONLINE: "TAP CORE TO ACTIVATE",
-    LISTENING: "ENTER YOUR TASK",
-    THINKING: "PROCESSING TASK",
-    RESPONDING: "TASK RECEIVED"
+    LISTENING: "AWAITING COMMAND",
+    THINKING: "PROCESSING COMMAND",
+    RESPONDING: "COMMAND ACCEPTED"
   };
 
   instruction.textContent = messages[nextState];
 }
 
 function delay(milliseconds) {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
+  return new Promise(resolve => {
+    setTimeout(resolve, milliseconds);
+  });
 }
 
-async function activateJarvis() {
-  setState("LISTENING");
-
-  await delay(400);
-
-  const enteredTask = prompt("What task shall I record?", "TEST");
-
-  if (!enteredTask || !enteredTask.trim()) {
-    setState("ONLINE");
+function openCommandPanel() {
+  if (busy) {
     return;
   }
 
+  setState("LISTENING");
+
+  commandPanel.hidden = false;
+  taskResult.hidden = true;
+
+  setTimeout(() => {
+    commandInput.focus();
+  }, 150);
+}
+
+function closeKeyboard() {
+  commandInput.blur();
+}
+
+async function processCommand(command) {
+  busy = true;
+
+  closeKeyboard();
   setState("THINKING");
 
   await delay(1200);
 
-  taskText.textContent = enteredTask.trim().toUpperCase();
-  taskPanel.hidden = false;
+  taskText.textContent = command.toUpperCase();
+  taskResult.hidden = false;
 
   setState("RESPONDING");
 
@@ -57,12 +77,33 @@ async function activateJarvis() {
     navigator.vibrate([25, 40, 25]);
   }
 
-  await delay(2000);
+  await delay(1800);
+
+  commandPanel.hidden = true;
+  commandInput.value = "";
 
   setState("ONLINE");
+  busy = false;
 }
 
-core.addEventListener("click", activateJarvis);
+core.addEventListener("click", openCommandPanel);
+
+commandForm.addEventListener("submit", event => {
+  event.preventDefault();
+
+  if (busy) {
+    return;
+  }
+
+  const command = commandInput.value.trim();
+
+  if (!command) {
+    commandInput.focus();
+    return;
+  }
+
+  processCommand(command);
+});
 
 updateClock();
 setInterval(updateClock, 1000);
