@@ -1484,3 +1484,24 @@ body:has(#core[data-state="complete"]) .state {
     font-size: 0.67rem;
   }
 }
+.control-bar,
+#command-form,
+.briefing-panel {
+  position: relative;
+  z-index: 5;
+}
+
+.control-bar button,
+#command-submit,
+#system-panel-close {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.presence-status-slot {
+  z-index: 1;
+}
+
+.presence-status-slot .live-summary {
+  pointer-events: none;
+}
