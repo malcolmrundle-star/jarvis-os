@@ -1,59 +1,75 @@
 const JARVIS_CORE_URL = "./core.json";
 
-function calculateScore(task) {
+function calculateCoreScore(task) {
   return (
-    task.priority * 4 +
-    task.urgency * 3 +
-    task.impact * 3 -
-    task.effort
+    Number(task.priority || 0) * 4 +
+    Number(task.urgency || 0) * 3 +
+    Number(task.impact || 0) * 3 -
+    Number(task.effort || 0)
   );
 }
 
-function chooseNextTask(tasks = []) {
-  const availableTasks = tasks.filter(
-    task => task.status === "AVAILABLE"
-  );
-
-  if (availableTasks.length === 0) {
-    return null;
+function chooseCoreTask(tasks = []) {
+  if (window.JarvisDecision?.chooseNextTask) {
+    return window.JarvisDecision.chooseNextTask(tasks);
   }
 
-  return availableTasks
-    .map(task => ({
-      ...task,
-      score: calculateScore(task)
-    }))
-    .sort((a, b) => b.score - a.score)[0];
+  return (
+    tasks
+      .filter(task => task.status === "AVAILABLE")
+      .map(task => ({
+        ...task,
+        score: calculateCoreScore(task)
+      }))
+      .sort((a, b) => b.score - a.score)[0] || null
+  );
 }
 
-function explainDecision(task) {
-  const reasons = [];
-
-  if (task.priority >= 5) {
-    reasons.push("highest priority");
+function explainCoreDecision(task) {
+  if (window.JarvisDecision?.explainDecision) {
+    return window.JarvisDecision.explainDecision(task);
   }
 
-  if (task.urgency >= 4) {
-    reasons.push("urgent");
+  return task
+    ? "Selected as the strongest available next action."
+    : "No available tasks.";
+}
+
+function updateJarvisInterface(coreState) {
+  const stateLabel = document.querySelector(".state");
+  const nextTask = document.getElementById("next-task");
+  const decisionReason = document.getElementById("decision-reason");
+  const decisionStatus = document.getElementById("decision-status");
+
+  if (stateLabel && coreState.system?.status) {
+    stateLabel.textContent = coreState.system.status;
   }
 
-  if (task.impact >= 5) {
-    reasons.push("high impact");
+  if (nextTask) {
+    nextTask.textContent =
+      coreState.decision?.selectedTask || "No active task";
   }
 
-  if (task.effort <= 2) {
-    reasons.push("quick to complete");
+  if (decisionReason) {
+    decisionReason.textContent =
+      coreState.decision?.reason || "Awaiting evaluation";
   }
 
-  return reasons.length
-    ? `Selected because it is ${reasons.join(", ")}.`
-    : "Selected as the strongest available next action.";
+  if (decisionStatus) {
+    decisionStatus.textContent =
+      coreState.decision?.selectedTask
+        ? "SELECTED"
+        : "CLEAR";
+  }
 }
 
 async function loadJarvisCore() {
   try {
     const response = await fetch(
-      `${JARVIS_CORE_URL}?updated=${Date.now()}`
+      `${JARVIS_CORE_URL}?updated=${Date.now()}`,
+      {
+        cache: "no-store"
+      }
     );
 
     if (!response.ok) {
@@ -61,15 +77,13 @@ async function loadJarvisCore() {
     }
 
     const coreState = await response.json();
-    const selectedTask = chooseNextTask(coreState.tasks);
+    const selectedTask = chooseCoreTask(coreState.tasks || []);
 
     window.JARVIS_CORE = {
       ...coreState,
       decision: {
         selectedTask: selectedTask?.title || "",
-        reason: selectedTask
-          ? explainDecision(selectedTask)
-          : "No available tasks.",
+        reason: explainCoreDecision(selectedTask),
         lastEvaluated: new Date().toISOString()
       }
     };
@@ -87,43 +101,6 @@ async function loadJarvisCore() {
   }
 }
 
-function updateJarvisInterface(coreState) {
-  const stateLabel = document.querySelector(".state");
-  const nextTask = document.getElementById("next-task");
-  const decisionReason =
-    document.getElementById("decision-reason");
-  const decisionStatus =
-    document.getElementById("decision-status");
-
-  if (stateLabel) {
-    stateLabel.textContent =
-      coreState.system?.status || "ONLINE";
-  }
-
-  if (nextTask) {
-    nextTask.textContent =
-      coreState.decision?.selectedTask ||
-      "No active task";
-  }
-
-  if (decisionReason) {
-    decisionReason.textContent =
-      coreState.decision?.reason ||
-      "Awaiting evaluation";
-  }
-
-  if (decisionStatus) {
-    decisionStatus.textContent =
-      coreState.decision?.selectedTask
-        ? "SELECTED"
-        : "CLEAR";
-  }
-}
-
-window.addEventListener("load", () => {
-  setTimeout(loadJarvisCore, 250);
+document.addEventListener("DOMContentLoaded", () => {
+  window.setTimeout(loadJarvisCore, 250);
 });
-document.addEventListener(
-  "DOMContentLoaded",
-  loadJarvisCore
-);
