@@ -2,28 +2,72 @@
   "system": {
     "name": "JARVIS OS",
     "status": "ONLINE",
-    "mode": "DEVELOPMENT",
+    "mode": "BUILD",
     "version": "0.2"
   },
+
   "user": {
     "name": "Malcolm",
     "preferredAddress": "Sir"
   },
+
   "activeProject": {
     "name": "JARVIS OS",
-    "milestone": "Core Integration",
-    "progress": 72
+    "milestone": "Working Prototype",
+    "progress": 40
   },
-  "mission": {
-    "currentTask": "TEST CORE CONNECTION",
-    "nextAction": "Load CORE state into the app",
-    "priority": "HIGH"
+
+  "tasks": [
+    {
+      "id": "task-001",
+      "title": "Connect JARVIS to Apple Shortcuts",
+      "priority": 5,
+      "urgency": 5,
+      "impact": 5,
+      "effort": 3,
+      "status": "AVAILABLE"
+    },
+    {
+      "id": "task-002",
+      "title": "Add reliable task memory",
+      "priority": 4,
+      "urgency": 3,
+      "impact": 5,
+      "effort": 3,
+      "status": "AVAILABLE"
+    },
+    {
+      "id": "task-003",
+      "title": "Connect Reminders",
+      "priority": 4,
+      "urgency": 3,
+      "impact": 4,
+      "effort": 2,
+      "status": "AVAILABLE"
+    },
+    {
+      "id": "task-004",
+      "title": "Improve the interface",
+      "priority": 2,
+      "urgency": 1,
+      "impact": 2,
+      "effort": 4,
+      "status": "AVAILABLE"
+    }
+  ],
+
+  "decision": {
+    "selectedTask": "",
+    "reason": "",
+    "lastEvaluated": ""
   },
+
   "services": {
     "voice": "NOT CONNECTED",
     "memory": "STATIC",
     "calendar": "NOT CONNECTED",
     "outlook": "NOT CONNECTED",
-    "tasks": "NOT CONNECTED"
+    "reminders": "NOT CONNECTED",
+    "shortcuts": "TESTING"
   }
 }
