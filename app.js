@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const REMINDERS_KEY = "jarvis-live-reminders-v1";
+const SYNC_KEY = "jarvis-live-sync-v1";
+const REMINDERS_KEY = "jarvis-live-reminders-v1";
 const CALENDAR_KEY = "jarvis-live-calendar-v1";
 
 function saveList(key, items) {
