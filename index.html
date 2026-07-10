@@ -1,202 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>JARVIS OS</title>
 
-<title>JARVIS OS</title>
+  <meta name="theme-color" content="#000307">
 
-<meta name="theme-color" content="#000307">
-
-<link rel="manifest" href="./manifest.json">
-
-<link rel="stylesheet" href="./style.css?v=6">
-
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./style.css?v=6">
 </head>
 
 <body>
+  <div id="app">
+    <header class="top-bar">
+      <div class="system-status">
+        <span class="status-dot"></span>
+        <span>JARVIS OS</span>
+      </div>
 
-<div id="app">
+      <div id="time"></div>
+    </header>
 
-<header class="top-bar">
+    <main class="presence">
+      <button
+        id="core"
+        type="button"
+        aria-label="Open daily briefing"
+      >
+        <div class="ambient-glow"></div>
 
-<div class="system-status">
+        <div class="ring ring-outer"></div>
+        <div class="ring ring-middle"></div>
+        <div class="ring ring-inner"></div>
 
-<span class="status-dot"></span>
+        <div class="orbit orbit-one">
+          <div class="particle"></div>
+        </div>
 
-<span>JARVIS OS</span>
+        <div class="orbit orbit-two">
+          <div class="particle"></div>
+        </div>
 
-</div>
+        <div class="reactor">
+          <div class="reactor-grid"></div>
+          <div class="reactor-centre"></div>
+        </div>
+      </button>
 
-<div id="time"></div>
+      <div class="identity">JARVIS</div>
+      <div class="state">ONLINE</div>
+      <div class="instruction">SYSTEM READY</div>
+    </main>
 
-</header>
+    <section
+      id="briefing-panel"
+      class="briefing-panel"
+    >
+      <div class="briefing-header">
+        <span>DAILY BRIEFING</span>
+        <span id="briefing-status">READY</span>
+      </div>
 
-<main class="presence">
+      <div class="briefing-section">
+        <span class="briefing-label">REMINDERS</span>
 
-<button id="core">
+        <div id="reminders-list">
+          No reminder data loaded.
+        </div>
+      </div>
+    </section>
 
-<div class="ambient-glow"></div>
+    <nav
+      class="control-bar"
+      aria-label="JARVIS controls"
+    >
+      <button id="refresh-button" type="button">
+        REFRESH
+      </button>
 
-<div class="ring ring-outer"></div>
+      <button id="briefing-button" type="button">
+        BRIEFING
+      </button>
 
-<div class="ring ring-middle"></div>
+      <button id="reminders-button" type="button">
+        REMINDERS
+      </button>
 
-<div class="ring ring-inner"></div>
+      <button id="calendar-button" type="button">
+        CALENDAR
+      </button>
 
-<div class="orbit orbit-one">
-<div class="particle"></div>
-</div>
+      <button id="outlook-button" type="button">
+        OUTLOOK
+      </button>
+    </nav>
 
-<div class="orbit orbit-two">
-<div class="particle"></div>
-</div>
+    <section
+      id="system-panel"
+      class="system-panel"
+      hidden
+      aria-live="polite"
+    >
+      <div class="system-panel-header">
+        <span id="system-panel-title">SYSTEM</span>
 
-<div class="reactor">
+        <button
+          id="system-panel-close"
+          type="button"
+          aria-label="Close system panel"
+        >
+          ×
+        </button>
+      </div>
 
-<div class="reactor-grid"></div>
+      <div id="system-panel-content"></div>
+    </section>
 
-<div class="reactor-centre"></div>
+    <form id="command-form">
+      <label for="command-input">
+        COMMAND
+      </label>
 
-</div>
+      <div class="command-entry">
+        <input
+          id="command-input"
+          type="text"
+          placeholder="Give JARVIS a task"
+          autocomplete="off"
+          enterkeyhint="done"
+        >
 
-</button>
+        <button
+          id="command-submit"
+          type="submit"
+          aria-label="Submit command"
+        >
+          ↑
+        </button>
+      </div>
+    </form>
 
-<div class="identity">
-JARVIS
-</div>
+    <div
+      id="task-result"
+      class="task-result"
+      hidden
+    >
+      <span class="task-label">
+        CURRENT TASK
+      </span>
 
-<div class="state">
-ONLINE
-</div>
-
-<div class="instruction">
-TAP CORE TO ACTIVATE
-</div>
-
-</main>
-
-<section id="briefing-panel" class="briefing-panel">
-
-  <div class="briefing-header">
-    <span>DAILY BRIEFING</span>
-    <span id="briefing-status">READY</span>
-  </div>
-
-  <div class="briefing-section">
-    <span class="briefing-label">REMINDERS</span>
-
-    <div id="reminders-list">
-      No reminder data loaded.
+      <strong id="task-text"></strong>
     </div>
   </div>
 
-</section>
-
-<nav class="control-bar">
-  <button id="refresh-button" type="button">REFRESH</button>
-  <button id="briefing-button" type="button">BRIEFING</button>
-  <button id="reminders-button" type="button">REMINDERS</button>
-  <button id="calendar-button" type="button">CALENDAR</button>
-  <button id="outlook-button" type="button">OUTLOOK</button>
-</nav>
-
-<section
-  id="system-panel"
-  class="system-panel"
-  hidden
->
-  <div class="system-panel-header">
-    <span id="system-panel-title">SYSTEM</span>
-
-    <button
-      id="system-panel-close"
-      type="button"
-      aria-label="Close system panel"
-    >
-      ×
-    </button>
-  </div>
-
-  <div id="system-panel-content"></div>
-</section>
-<form id="command-form">
-
-<label for="command-input">
-
-COMMAND
-
-</label>
-
-<div class="command-entry">
-
-<input
-
-id="command-input"
-
-type="text"
-
-placeholder="Give JARVIS a task"
-
-autocomplete="off"
-
-enterkeyhint="done"
-
->
-
-<button
-
-id="command-submit"
-
-type="submit"
-
-aria-label="Submit command"
-
->
-
-↑
-
-</button>
-
-</div>
-
-</form>
-
-<div
-id="task-result"
-class="task-result"
-hidden>
-
-<span class="task-label">
-
-CURRENT TASK
-
-</span>
-
-<strong id="task-text">
-
-TEST
-
-</strong>
-
-</div>
-
-</section>
-
-</div>
-<script src="./decision.js?v=1"></script>
-<script src="./memory.js?v=1"></script>
-<script src="./app.js?v=35"></script>
-<script src="./core.js?v=3"></script>
+  <script src="./decision.js?v=1"></script>
+  <script src="./memory.js?v=1"></script>
+  <script src="./app.js?v=36"></script>
+  <script src="./core.js?v=4"></script>
 </body>
-</html>
-
-
-</body>
-
 </html>
