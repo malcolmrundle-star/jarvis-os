@@ -461,9 +461,9 @@ renderLiveSummary();
   window.setInterval(updateClock, 1000);
 
   renderCurrentTask();
-  importLiveDataFromURL();
-  renderBriefing();
-  renderLiveSummary();
+importLiveDataFromURL();
+renderBriefing();
+renderLiveSummary();
 
   if (!getLastSync()) {
     setState("ONLINE");
