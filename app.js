@@ -1,23 +1,65 @@
 document.addEventListener("DOMContentLoaded", () => {
     const REMINDERS_KEY = "jarvis-live-reminders-v1";
+const CALENDAR_KEY = "jarvis-live-calendar-v1";
 
-  function saveReminders(reminders) {
-    localStorage.setItem(
-      REMINDERS_KEY,
-      JSON.stringify(reminders)
+function saveList(key, items) {
+  localStorage.setItem(key, JSON.stringify(items));
+}
+
+function loadList(key) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(key));
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
+  }
+}
+
+function parseLines(value) {
+  return (value || "")
+    .split(/\r?\n/)
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
+function saveReminders(items) {
+  saveList(REMINDERS_KEY, items);
+}
+
+function loadReminders() {
+  return loadList(REMINDERS_KEY);
+}
+
+function saveCalendar(items) {
+  saveList(CALENDAR_KEY, items);
+}
+
+function loadCalendar() {
+  return loadList(CALENDAR_KEY);
+}
+
+function importLiveDataFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  let imported = false;
+
+  if (params.has("reminders")) {
+    saveReminders(parseLines(params.get("reminders")));
+    imported = true;
+  }
+
+  if (params.has("calendar")) {
+    saveCalendar(parseLines(params.get("calendar")));
+    imported = true;
+  }
+
+  if (imported) {
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
     );
   }
-
-  function loadReminders() {
-    try {
-      return JSON.parse(
-        localStorage.getItem(REMINDERS_KEY)
-      ) || [];
-    } catch {
-      return [];
-    }
-  }
-
+}
   function importRemindersFromURL() {
     const params = new URLSearchParams(window.location.search);
     const reminderData = params.get("reminders");
