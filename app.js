@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const STORAGE_KEY = "jarvis-os-tasks-v1";
+
   const timeElement = document.getElementById("time");
   const core = document.getElementById("core");
   const stateLabel = document.querySelector(".state");
@@ -10,48 +12,58 @@ document.addEventListener("DOMContentLoaded", () => {
   const taskResult = document.getElementById("task-result");
   const taskText = document.getElementById("task-text");
 
+  const decisionPanel = document.getElementById("decision-panel");
   const decisionStatus = document.getElementById("decision-status");
   const nextTaskElement = document.getElementById("next-task");
   const decisionReason = document.getElementById("decision-reason");
 
   let busy = false;
+  let selectedTaskId = null;
 
-  const tasks = [
+  const starterTasks = [
     {
-      title: "Connect JARVIS Decision Engine",
+      id: crypto.randomUUID(),
+      title: "Start using JARVIS OS",
       priority: 5,
       urgency: 5,
       projectValue: 5,
-      effort: 2,
-      completed: false
-    },
-    {
-      title: "Add persistent task memory",
-      priority: 5,
-      urgency: 3,
-      projectValue: 5,
-      effort: 3,
-      completed: false
-    },
-    {
-      title: "Connect voice input",
-      priority: 4,
-      urgency: 3,
-      projectValue: 5,
-      effort: 4,
-      completed: false
+      effort: 1,
+      completed: false,
+      createdAt: Date.now()
     }
   ];
 
-  function updateClock() {
-    const now = new Date();
+  function loadTasks() {
+    try {
+      const savedTasks = localStorage.getItem(STORAGE_KEY);
 
-    if (timeElement) {
-      timeElement.textContent = now.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+      if (!savedTasks) {
+        saveTasks(starterTasks);
+        return starterTasks;
+      }
+
+      const parsedTasks = JSON.parse(savedTasks);
+
+      return Array.isArray(parsedTasks) ? parsedTasks : starterTasks;
+    } catch (error) {
+      console.error("Unable to load JARVIS tasks:", error);
+      return starterTasks;
     }
+  }
+
+  let tasks = loadTasks();
+
+  function saveTasks(taskList = tasks) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(taskList));
+  }
+
+  function updateClock() {
+    if (!timeElement) return;
+
+    timeElement.textContent = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
   }
 
   function setState(nextState) {
@@ -68,11 +80,11 @@ document.addEventListener("DOMContentLoaded", () => {
       LISTENING: "AWAITING COMMAND",
       THINKING: "EVALUATING PRIORITIES",
       RESPONDING: "DECISION READY",
-      COMPLETE: "TASK SELECTED"
+      COMPLETE: "TASK COMPLETE"
     };
 
     if (instruction) {
-      instruction.textContent = messages[nextState];
+      instruction.textContent = messages[nextState] || "";
     }
   }
 
@@ -83,11 +95,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function calculateTaskScore(task) {
+    const ageInHours =
+      (Date.now() - (task.createdAt || Date.now())) / 3600000;
+
+    const ageBonus = Math.min(ageInHours / 24, 3);
+
     return (
       task.priority * 4 +
       task.urgency * 3 +
       task.projectValue * 3 -
-      task.effort
+      task.effort +
+      ageBonus
     );
   }
 
@@ -109,71 +127,102 @@ document.addEventListener("DOMContentLoaded", () => {
   function explainDecision(task) {
     const reasons = [];
 
-    if (task.priority >= 5) {
-      reasons.push("highest priority");
+    if (task.priority >= 5) reasons.push("high priority");
+    if (task.urgency >= 4) reasons.push("time-sensitive");
+    if (task.projectValue >= 5) reasons.push("important to your active project");
+    if (task.effort <= 2) reasons.push("immediately actionable");
+
+    if (reasons.length === 0) {
+      return "Selected as the strongest available next action.";
     }
 
-    if (task.urgency >= 4) {
-      reasons.push("time-sensitive");
-    }
-
-    if (task.projectValue >= 5) {
-      reasons.push("critical to JARVIS OS");
-    }
-
-    if (task.effort <= 2) {
-      reasons.push("immediately actionable");
-    }
-
-    return reasons.length
-      ? `Selected because it is ${reasons.join(", ")}.`
-      : "Selected as the strongest available next action.";
+    return `Selected because it is ${reasons.join(", ")}. Tap this panel when complete.`;
   }
 
   function displayDecision(task) {
+    if (!nextTaskElement || !decisionReason || !decisionStatus) {
+      return;
+    }
+
     if (!task) {
+      selectedTaskId = null;
       nextTaskElement.textContent = "No remaining tasks";
-      decisionReason.textContent = "All available tasks are complete.";
+      decisionReason.textContent =
+        "Tap the core and give JARVIS your next task.";
       decisionStatus.textContent = "CLEAR";
       return;
     }
 
+    selectedTaskId = task.id;
     nextTaskElement.textContent = task.title;
     decisionReason.textContent = explainDecision(task);
     decisionStatus.textContent = "SELECTED";
   }
 
-  async function runDecisionEngine() {
+  function refreshDecision() {
+    displayDecision(chooseNextTask());
+  }
+
+  function addTask(title) {
+    const newTask = {
+      id: crypto.randomUUID(),
+      title,
+      priority: 3,
+      urgency: 3,
+      projectValue: 3,
+      effort: 2,
+      completed: false,
+      createdAt: Date.now()
+    };
+
+    tasks.push(newTask);
+    saveTasks();
+
+    return newTask;
+  }
+
+  async function completeSelectedTask() {
+    if (busy || !selectedTaskId) return;
+
+    const selectedTask = tasks.find(task => task.id === selectedTaskId);
+
+    if (!selectedTask) return;
+
+    busy = true;
+
     setState("THINKING");
 
     if (decisionStatus) {
-      decisionStatus.textContent = "ANALYSING";
+      decisionStatus.textContent = "UPDATING";
     }
 
-    await delay(1200);
+    await delay(600);
 
-    const selectedTask = chooseNextTask();
+    selectedTask.completed = true;
+    selectedTask.completedAt = Date.now();
 
-    displayDecision(selectedTask);
-
-    setState("RESPONDING");
-    await delay(900);
+    saveTasks();
 
     setState("COMPLETE");
+
+    if (decisionStatus) {
+      decisionStatus.textContent = "COMPLETE";
+    }
 
     if ("vibrate" in navigator) {
       navigator.vibrate([40, 60, 40]);
     }
 
-    await delay(1600);
+    await delay(1400);
 
+    refreshDecision();
     setState("ONLINE");
+
+    busy = false;
   }
 
   function openCommandPanel() {
-    if (busy || !commandPanel || !commandInput) {
-      return;
-    }
+    if (busy || !commandPanel || !commandInput) return;
 
     setState("LISTENING");
 
@@ -194,19 +243,17 @@ document.addEventListener("DOMContentLoaded", () => {
     commandInput.blur();
 
     setState("THINKING");
-    await delay(1000);
 
-    tasks.push({
-      title: command,
-      priority: 3,
-      urgency: 3,
-      projectValue: 3,
-      effort: 2,
-      completed: false
-    });
+    if (decisionStatus) {
+      decisionStatus.textContent = "ANALYSING";
+    }
+
+    await delay(900);
+
+    const newTask = addTask(command);
 
     if (taskText) {
-      taskText.textContent = command.toUpperCase();
+      taskText.textContent = newTask.title.toUpperCase();
     }
 
     if (taskResult) {
@@ -214,9 +261,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     setState("RESPONDING");
-    await delay(900);
 
-    await runDecisionEngine();
+    await delay(800);
+
+    refreshDecision();
+
+    setState("COMPLETE");
+
+    if ("vibrate" in navigator) {
+      navigator.vibrate([30, 50, 30]);
+    }
+
+    await delay(1300);
 
     commandPanel.hidden = true;
     commandInput.value = "";
@@ -225,6 +281,8 @@ document.addEventListener("DOMContentLoaded", () => {
       taskResult.hidden = true;
     }
 
+    setState("ONLINE");
+
     busy = false;
   }
 
@@ -232,13 +290,15 @@ document.addEventListener("DOMContentLoaded", () => {
     core.addEventListener("click", openCommandPanel);
   }
 
+  if (decisionPanel) {
+    decisionPanel.addEventListener("click", completeSelectedTask);
+  }
+
   if (commandForm && commandInput) {
     commandForm.addEventListener("submit", event => {
       event.preventDefault();
 
-      if (busy) {
-        return;
-      }
+      if (busy) return;
 
       const command = commandInput.value.trim();
 
@@ -255,5 +315,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(updateClock, 1000);
 
   setState("ONLINE");
-  displayDecision(chooseNextTask());
+  refreshDecision();
 });
