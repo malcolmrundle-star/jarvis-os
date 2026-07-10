@@ -30,8 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     taskResult: document.getElementById("task-result"),
     taskText: document.getElementById("task-text"),
-
-    summaryReminders: document.getElementById("summary-reminders"),
+summaryReminders: document.getElementById("summary-reminders"),
     summaryCalendar: document.getElementById("summary-calendar"),
     summaryOutlook: document.getElementById("summary-outlook")
   };
