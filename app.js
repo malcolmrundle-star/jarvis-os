@@ -226,6 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     setTimeout(() => {
+        importRemindersFromURL();
       setState("ONLINE");
     }, 1200);
   }
