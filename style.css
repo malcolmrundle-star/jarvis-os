@@ -1163,3 +1163,34 @@ body:has(#core[data-state="complete"]) .state {
   font-size: 7px;
   letter-spacing: 0.08em;
 }
+.live-summary {
+  width: 100%;
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.summary-card {
+  border: 1px solid rgba(110, 220, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(5, 16, 28, 0.52);
+  padding: 14px 18px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  color: rgba(145, 220, 255, 0.75);
+  margin-bottom: 8px;
+}
+
+.summary-card strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #eafcff;
+  letter-spacing: 0.08em;
+}
