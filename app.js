@@ -1,240 +1,319 @@
 document.addEventListener("DOMContentLoaded", () => {
-const SYNC_KEY = "jarvis-live-sync-v1";
-const REMINDERS_KEY = "jarvis-live-reminders-v1";
-const CALENDAR_KEY = "jarvis-live-calendar-v1";
+  const STORAGE = {
+    sync: "jarvis-live-sync-v1",
+    reminders: "jarvis-live-reminders-v1",
+    calendar: "jarvis-live-calendar-v1"
+  };
 
-function saveList(key, items) {
-  localStorage.setItem(key, JSON.stringify(items));
-}
+  const elements = {
+    time: document.getElementById("time"),
+    core: document.getElementById("core"),
+    state: document.querySelector(".state"),
+    instruction: document.querySelector(".instruction"),
+    refreshButton: document.getElementById("refresh-button"),
+    briefingButton: document.getElementById("briefing-button"),
+    remindersButton: document.getElementById("reminders-button"),
+    calendarButton: document.getElementById("calendar-button"),
+    outlookButton: document.getElementById("outlook-button"),
+    systemPanel: document.getElementById("system-panel"),
+    systemPanelTitle: document.getElementById("system-panel-title"),
+    systemPanelContent: document.getElementById("system-panel-content"),
+    systemPanelClose: document.getElementById("system-panel-close"),
+    briefingStatus: document.getElementById("briefing-status"),
+    remindersList: document.getElementById("reminders-list"),
+    commandForm: document.getElementById("command-form"),
+    commandInput: document.getElementById("command-input"),
+    taskResult: document.getElementById("task-result"),
+    taskText: document.getElementById("task-text")
+  };
 
-function loadList(key) {
-  try {
-    const saved = JSON.parse(localStorage.getItem(key));
-    return Array.isArray(saved) ? saved : [];
-  } catch {
-    return [];
-  }
-}
-
-function parseLines(value) {
-  return (value || "")
-    .split(/\r?\n/)
-    .map(item => item.trim())
-    .filter(Boolean);
-}
-
-function saveReminders(items) {
-  saveList(REMINDERS_KEY, items);
-}
-
-function loadReminders() {
-  return loadList(REMINDERS_KEY);
-}
-
-function saveCalendar(items) {
-  saveList(CALENDAR_KEY, items);
-}
-
-function loadCalendar() {
-  return loadList(CALENDAR_KEY);
-}
-
-function importLiveDataFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  let imported = false;
-
-  if (params.has("reminders")) {
-    saveReminders(parseLines(params.get("reminders")));
-    imported = true;
+  function escapeHTML(value) {
+    const node = document.createElement("div");
+    node.textContent = String(value ?? "");
+    return node.innerHTML;
   }
 
-  if (params.has("calendar")) {
-    saveCalendar(parseLines(params.get("calendar")));
-    imported = true;
+  function saveList(key, items) {
+    localStorage.setItem(key, JSON.stringify(items));
   }
 
-  if (imported) {
-    localStorage.setItem(
-  SYNC_KEY,
-  new Date().toISOString()
-);
-
-setTimeout(showSystemStatus, 200);
-    window.history.replaceState(
-      {},
-      document.title,
-      window.location.pathname
-    );
+  function loadList(key) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(key));
+      return Array.isArray(saved) ? saved : [];
+    } catch (error) {
+      console.error("JARVIS storage read failed:", error);
+      return [];
+    }
   }
-}
-  function importRemindersFromURL() {
-    const params = new URLSearchParams(window.location.search);
-    const reminderData = params.get("reminders");
 
-    if (!reminderData) return;
+  function parseList(value) {
+    if (!value) return [];
 
-    const reminders = reminderData
-      .split("|||")
+    const decoded = String(value).trim();
+    if (!decoded) return [];
+
+    try {
+      const parsed = JSON.parse(decoded);
+
+      if (Array.isArray(parsed)) {
+        return parsed
+          .map(item => String(item).trim())
+          .filter(Boolean);
+      }
+    } catch {
+      // Apple Shortcuts may send plain text instead of JSON.
+    }
+
+    return decoded
+      .split(/\|\|\||\r?\n/)
       .map(item => item.trim())
       .filter(Boolean);
-
-    saveReminders(reminders);
-
-    window.history.replaceState(
-      {},
-      document.title,
-      window.location.pathname
-    );
   }
-  const timeElement = document.getElementById("time");
-  const core = document.getElementById("core");
-  const stateLabel = document.querySelector(".state");
-  const instruction = document.querySelector(".instruction");
 
-  const refreshButton = document.getElementById("refresh-button");
-  const briefingButton = document.getElementById("briefing-button");
-  const remindersButton = document.getElementById("reminders-button");
-  const calendarButton = document.getElementById("calendar-button");
-  const outlookButton = document.getElementById("outlook-button");
+  function saveReminders(items) {
+    saveList(STORAGE.reminders, items);
+  }
 
-  const systemPanel = document.getElementById("system-panel");
-  const systemPanelTitle = document.getElementById("system-panel-title");
-  const systemPanelContent = document.getElementById("system-panel-content");
-  const systemPanelClose = document.getElementById("system-panel-close");
+  function loadReminders() {
+    return loadList(STORAGE.reminders);
+  }
 
-  function updateClock() {
-    if (!timeElement) return;
+  function saveCalendar(items) {
+    saveList(STORAGE.calendar, items);
+  }
 
-    timeElement.textContent = new Date().toLocaleTimeString([], {
+  function loadCalendar() {
+    return loadList(STORAGE.calendar);
+  }
+
+  function getLastSync() {
+    return localStorage.getItem(STORAGE.sync) || "";
+  }
+
+  function formatSyncTime(isoValue) {
+    if (!isoValue) return "NOT SYNCED";
+
+    const value = new Date(isoValue);
+
+    if (Number.isNaN(value.getTime())) {
+      return "NOT SYNCED";
+    }
+
+    return value.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit"
     });
   }
 
-  function setState(state) {
-    if (stateLabel) {
-      stateLabel.textContent = state;
+  function updateClock() {
+    if (!elements.time) return;
+
+    elements.time.textContent = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  function setState(state, message) {
+    const normalizedState = String(state || "ONLINE").toUpperCase();
+
+    if (elements.state) {
+      elements.state.textContent = normalizedState;
     }
 
-    if (core) {
-      core.dataset.state = state.toLowerCase();
+    if (elements.core) {
+      elements.core.dataset.state = normalizedState.toLowerCase();
     }
 
-    const messages = {
+    const fallbackMessages = {
       ONLINE: "SYSTEM READY",
+      LISTENING: "AWAITING COMMAND",
       THINKING: "PROCESSING",
+      RESPONDING: "COMMAND RECEIVED",
       COMPLETE: "UPDATED"
     };
 
-    if (instruction) {
-      instruction.textContent = messages[state] || "";
+    if (elements.instruction) {
+      elements.instruction.textContent =
+        message || fallbackMessages[normalizedState] || "";
     }
   }
 
   function openPanel(title, content) {
-    if (!systemPanel || !systemPanelTitle || !systemPanelContent) {
+    if (
+      !elements.systemPanel ||
+      !elements.systemPanelTitle ||
+      !elements.systemPanelContent
+    ) {
       return;
     }
 
-    systemPanelTitle.textContent = title;
-    systemPanelContent.innerHTML = content;
-    systemPanel.hidden = false;
+    elements.systemPanelTitle.textContent = title;
+    elements.systemPanelContent.innerHTML = content;
+    elements.systemPanel.hidden = false;
+  }
+
+  function closePanel() {
+    if (elements.systemPanel) {
+      elements.systemPanel.hidden = true;
+    }
+  }
+
+  function renderBriefing() {
+    const reminders = loadReminders();
+    const lastSync = getLastSync();
+
+    if (elements.briefingStatus) {
+      elements.briefingStatus.textContent = lastSync
+        ? `SYNCED ${formatSyncTime(lastSync)}`
+        : "READY";
+    }
+
+    if (!elements.remindersList) return;
+
+    elements.remindersList.innerHTML = reminders.length
+      ? reminders
+          .slice(0, 5)
+          .map(
+            (reminder, index) =>
+              `<div>${index + 1}. ${escapeHTML(reminder)}</div>`
+          )
+          .join("")
+      : "No reminder data loaded.";
+  }
+
+  function renderCurrentTask() {
+    const memory = window.JarvisMemory?.loadMemory?.();
+    const currentTask = memory?.currentTask || "";
+
+    if (!elements.taskResult || !elements.taskText) return;
+
+    elements.taskText.textContent = currentTask;
+    elements.taskResult.hidden = !currentTask;
+  }
+
+  function importLiveDataFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    let imported = false;
+
+    if (params.has("reminders")) {
+      saveReminders(parseList(params.get("reminders")));
+      imported = true;
+    }
+
+    if (params.has("calendar")) {
+      saveCalendar(parseList(params.get("calendar")));
+      imported = true;
+    }
+
+    if (!imported) {
+      renderBriefing();
+      return false;
+    }
+
+    localStorage.setItem(STORAGE.sync, new Date().toISOString());
+
+    renderBriefing();
+    setState("COMPLETE", "SHORTCUT DATA IMPORTED");
+
+    window.history.replaceState(
+      {},
+      document.title,
+      `${window.location.pathname}${window.location.hash}`
+    );
+
+    window.setTimeout(() => {
+      setState("ONLINE");
+    }, 1200);
+
+    return true;
   }
 
   function showBriefing() {
+    const reminders = loadReminders();
+    const events = loadCalendar();
+
+    const currentTask =
+      window.JarvisMemory?.loadMemory?.()?.currentTask ||
+      "No active task";
+
     openPanel(
       "DAILY BRIEFING",
       `
-        <div class="diagnostic-row">
-          <span>MISSION</span>
-          <span>Build JARVIS OS</span>
+        <div><strong>MODE</strong> BUILD</div>
+        <div>
+          <strong>CURRENT TASK</strong>
+          ${escapeHTML(currentTask)}
         </div>
-
-        <div class="diagnostic-row">
-          <span>PRIORITY</span>
-          <span class="diagnostic-value">Connect real services</span>
-        </div>
-
-        <div class="diagnostic-row">
-          <span>NEXT ACTION</span>
-          <span>Test dashboard controls</span>
-        </div>
-
-        <div class="diagnostic-row">
-          <span>MODE</span>
-          <span>BUILD</span>
+        <div><strong>REMINDERS</strong> ${reminders.length}</div>
+        <div><strong>CALENDAR</strong> ${events.length}</div>
+        <div>
+          <strong>LAST SYNC</strong>
+          ${escapeHTML(formatSyncTime(getLastSync()))}
         </div>
       `
     );
   }
 
-    function showReminders() {
+  function showReminders() {
     const reminders = loadReminders();
 
     const content = reminders.length
       ? reminders
-          .map((reminder, index) => `
-            <div class="diagnostic-row">
-              <span>${index + 1}</span>
-              <span>${escapeHTML(reminder)}</span>
-            </div>
-          `)
+          .map(
+            (reminder, index) =>
+              `<div>${index + 1}. ${escapeHTML(reminder)}</div>`
+          )
           .join("")
-      : `
-          <div class="diagnostic-row">
-            <span>STATUS</span>
-            <span>No JARVIS reminders loaded</span>
-          </div>
-        `;
+      : "<div>STATUS No JARVIS reminders loaded</div>";
 
     openPanel("REMINDERS", content);
   }
 
-  function escapeHTML(value) {
-    const element = document.createElement("div");
-    element.textContent = value;
-    return element.innerHTML;
-  }
-
   function showCalendar() {
-  const events = loadCalendar();
+    const events = loadCalendar();
 
-  const content = events.length
-    ? events
-        .map((event, index) => `
-          <div class="diagnostic-row">
-            <span>${index + 1}</span>
-            <span>${escapeHTML(event)}</span>
-          </div>
-        `)
-        .join("")
-    : `
-        <div class="diagnostic-row">
-          <span>STATUS</span>
-          <span>No calendar events today</span>
-        </div>
-      `;
+    const content = events.length
+      ? events
+          .map(
+            (event, index) =>
+              `<div>${index + 1}. ${escapeHTML(event)}</div>`
+          )
+          .join("")
+      : "<div>STATUS No calendar events loaded</div>";
 
-  openPanel("CALENDAR", content);
-}
+    openPanel("CALENDAR", content);
+  }
 
   function showOutlook() {
     openPanel(
       "OUTLOOK",
       `
-        <div class="diagnostic-row">
-          <span>STATUS</span>
-          <span>Not connected</span>
-        </div>
+        <div>STATUS Not connected</div>
+        <div>IMPORTANT 0 loaded</div>
+        <div>NEXT Connect email briefing</div>
+      `
+    );
+  }
 
-        <div class="diagnostic-row">
-          <span>IMPORTANT</span>
-          <span>0 loaded</span>
-        </div>
+  function showSystemStatus() {
+    const reminders = loadReminders();
+    const events = loadCalendar();
+    const lastSync = getLastSync();
 
-        <div class="diagnostic-row">
-          <span>NEXT</span>
-          <span>Connect email briefing</span>
+    openPanel(
+      "SYSTEM STATUS",
+      `
+        <div>CORE ONLINE</div>
+        <div>
+          MEMORY ${window.JarvisMemory ? "ONLINE" : "OFFLINE"}
+        </div>
+        <div>REMINDERS ${reminders.length} LOADED</div>
+        <div>CALENDAR ${events.length} LOADED</div>
+        <div>OUTLOOK NOT CONNECTED</div>
+        <div>
+          LAST SYNC ${escapeHTML(formatSyncTime(lastSync))}
         </div>
       `
     );
@@ -244,63 +323,129 @@ setTimeout(showSystemStatus, 200);
     setState("THINKING");
 
     await new Promise(resolve => {
-      setTimeout(resolve, 900);
+      window.setTimeout(resolve, 450);
     });
 
-    setState("COMPLETE");
+    const imported = importLiveDataFromURL();
+
+    renderBriefing();
+    renderCurrentTask();
+
+    if (!imported) {
+      setState("COMPLETE");
+    }
+
+    showSystemStatus();
+
+    window.setTimeout(() => {
+      setState("ONLINE");
+    }, 1000);
+  }
+
+  function saveTask(command) {
+    const task = command.trim();
+
+    if (!task) return;
+
+    window.JarvisMemory?.setCurrentTask?.(task);
+
+    renderCurrentTask();
+    setState("COMPLETE", "TASK SAVED");
 
     openPanel(
-      "SYSTEM REFRESH",
+      "COMMAND ACCEPTED",
       `
-        <div class="diagnostic-row">
-          <span>CORE</span>
-          <span class="diagnostic-value">ONLINE</span>
-        </div>
-
-        <div class="diagnostic-row">
-          <span>MEMORY</span>
-          <span class="diagnostic-value">ONLINE</span>
-        </div>
-
-        <div class="diagnostic-row">
-          <span>REMINDERS</span>
-          <span>STATIC DATA</span>
-        </div>
-
-        <div class="diagnostic-row">
-          <span>CALENDAR</span>
-          <span>NOT CONNECTED</span>
-        </div>
-
-        <div class="diagnostic-row">
-          <span>OUTLOOK</span>
-          <span>NOT CONNECTED</span>
-        </div>
+        <div>CURRENT TASK</div>
+        <div>${escapeHTML(task)}</div>
       `
     );
 
-    setTimeout(() => {
-        importLiveDataFromURL();
+    window.setTimeout(() => {
       setState("ONLINE");
-    }, 1200);
+    }, 1000);
   }
 
-  refreshButton?.addEventListener("click", runRefresh);
-  briefingButton?.addEventListener("click", showBriefing);
-  remindersButton?.addEventListener("click", showReminders);
-  calendarButton?.addEventListener("click", showCalendar);
-  outlookButton?.addEventListener("click", showOutlook);
+  function runCommand(command) {
+    const normalized = command.trim().toLowerCase();
 
-  systemPanelClose?.addEventListener("click", () => {
-    if (systemPanel) {
-      systemPanel.hidden = true;
+    if (!normalized) return;
+
+    setState("RESPONDING");
+
+    if (
+      normalized === "refresh" ||
+      normalized.includes("system refresh")
+    ) {
+      runRefresh();
+      return;
+    }
+
+    if (normalized.includes("briefing")) {
+      showBriefing();
+      setState("ONLINE");
+      return;
+    }
+
+    if (normalized.includes("reminder")) {
+      showReminders();
+      setState("ONLINE");
+      return;
+    }
+
+    if (normalized.includes("calendar")) {
+      showCalendar();
+      setState("ONLINE");
+      return;
+    }
+
+    if (
+      normalized.includes("outlook") ||
+      normalized.includes("email")
+    ) {
+      showOutlook();
+      setState("ONLINE");
+      return;
+    }
+
+    if (normalized.includes("status")) {
+      showSystemStatus();
+      setState("ONLINE");
+      return;
+    }
+
+    saveTask(command);
+  }
+
+  elements.refreshButton?.addEventListener("click", runRefresh);
+  elements.briefingButton?.addEventListener("click", showBriefing);
+  elements.remindersButton?.addEventListener("click", showReminders);
+  elements.calendarButton?.addEventListener("click", showCalendar);
+  elements.outlookButton?.addEventListener("click", showOutlook);
+  elements.systemPanelClose?.addEventListener("click", closePanel);
+  elements.core?.addEventListener("click", showBriefing);
+
+  elements.commandForm?.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const command = elements.commandInput?.value || "";
+
+    runCommand(command);
+
+    if (elements.commandInput) {
+      elements.commandInput.value = "";
+      elements.commandInput.blur();
     }
   });
 
-  core?.addEventListener("click", showBriefing);
-
   updateClock();
-  setInterval(updateClock, 1000);
 
-  setState("ONLINE");
+  window.setInterval(updateClock, 1000);
+
+  renderCurrentTask();
+  importLiveDataFromURL();
+  renderBriefing();
+
+  if (!getLastSync()) {
+    setState("ONLINE");
+  }
 });
