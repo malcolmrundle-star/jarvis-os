@@ -1000,3 +1000,128 @@ body:has(#core[data-state="complete"]) .state {
   font-size: 12px;
   line-height: 1.5;
 }
+.briefing-panel {
+  width: min(88vw, 390px);
+  margin: 28px auto 0;
+  padding: 18px;
+
+  border: 1px solid rgba(49, 232, 255, 0.18);
+  border-radius: 22px;
+
+  background: rgba(3, 12, 18, 0.78);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  box-shadow:
+    0 18px 55px rgba(0, 0, 0, 0.35),
+    0 0 34px rgba(49, 232, 255, 0.05);
+}
+
+.briefing-header {
+  display: flex;
+  justify-content: space-between;
+
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+
+  border-bottom: 1px solid rgba(49, 232, 255, 0.1);
+
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+}
+
+#briefing-status {
+  color: #36f28a;
+}
+
+.briefing-section {
+  display: grid;
+  gap: 12px;
+}
+
+.briefing-label {
+  color: var(--cyan);
+  font-size: 9px;
+  letter-spacing: 0.32em;
+}
+
+#reminders-list {
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.reminder-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(49, 232, 255, 0.08);
+}
+
+.reminder-item:last-child {
+  border-bottom: 0;
+}
+
+.control-bar {
+  width: min(88vw, 390px);
+  margin: 16px auto 0;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.control-bar button {
+  min-height: 46px;
+
+  border: 1px solid rgba(49, 232, 255, 0.18);
+  border-radius: 15px;
+
+  background: rgba(3, 12, 18, 0.76);
+  color: var(--muted);
+
+  font-size: 9px;
+  letter-spacing: 0.16em;
+}
+
+.control-bar button:active {
+  color: var(--cyan);
+  border-color: rgba(49, 232, 255, 0.55);
+}
+
+.system-panel {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(env(safe-area-inset-bottom) + 18px);
+
+  padding: 18px;
+
+  border: 1px solid rgba(49, 232, 255, 0.2);
+  border-radius: 22px;
+
+  background: rgba(2, 9, 14, 0.96);
+
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+
+  color: var(--text);
+
+  z-index: 30;
+}
+
+.system-panel[hidden] {
+  display: none;
+}
+
+.diagnostic-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+
+  border-bottom: 1px solid rgba(49, 232, 255, 0.08);
+}
+
+.diagnostic-value {
+  color: #36f28a;
+}
