@@ -1,0 +1,231 @@
+:root {
+  --bg: #02070b;
+  --panel: rgba(8,20,28,.72);
+  --cyan: #31e8ff;
+  --cyan-soft: rgba(49,232,255,.18);
+  --text: #e9fbff;
+  --muted: #6f8790;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+  background:
+  radial-gradient(circle at 50% 35%,rgba(0,180,220,.08),transparent 30%),
+  linear-gradient(180deg,#031018 0%,#02070b 70%);
+  color:var(--text);
+}
+
+#app{
+  width:100%;
+  height:100dvh;
+  padding:
+  calc(env(safe-area-inset-top)+25px)
+  24px
+  calc(env(safe-area-inset-bottom)+25px);
+  display:flex;
+  flex-direction:column;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:13px;
+  letter-spacing:.30em;
+  color:var(--muted);
+}
+
+.status{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.status::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#54f39a;
+  box-shadow:0 0 14px #54f39a;
+}
+
+main{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+
+#core{
+
+  width:min(58vw,240px);
+  aspect-ratio:1;
+  border-radius:50%;
+
+  position:relative;
+
+  background:
+  radial-gradient(circle at 35% 30%,
+  #c9fdff 0%,
+  #42ecff 18%,
+  #06a8c6 55%,
+  #013545 100%);
+
+  box-shadow:
+  0 0 40px rgba(49,232,255,.45),
+  0 0 120px rgba(49,232,255,.18),
+  inset -25px -30px 45px rgba(0,20,30,.45),
+  inset 18px 18px 30px rgba(255,255,255,.12);
+
+  animation:breathe 5s ease-in-out infinite;
+
+  transition:
+  transform .35s,
+  filter .35s,
+  box-shadow .35s;
+}
+
+#core::before{
+
+  content:"";
+  position:absolute;
+  inset:-45px;
+  border-radius:50%;
+  border:1px solid rgba(49,232,255,.30);
+
+}
+
+#core::after{
+
+  content:"";
+  position:absolute;
+  inset:-80px;
+  border-radius:50%;
+  border:1px solid rgba(49,232,255,.15);
+
+}
+
+.state{
+
+  margin-top:90px;
+
+  font-size:14px;
+
+  letter-spacing:.55em;
+
+  color:var(--cyan);
+
+  text-shadow:
+  0 0 14px rgba(49,232,255,.35);
+
+}
+
+#core:active{
+
+  transform:scale(.95);
+
+}
+
+#core[data-state="listening"]{
+
+  animation:listening 1.2s ease-in-out infinite;
+
+}
+
+#core[data-state="thinking"]{
+
+  animation:thinking 1.8s linear infinite;
+
+}
+
+#core[data-state="responding"]{
+
+  animation:responding .65s ease infinite;
+
+}
+
+@keyframes breathe{
+
+0%,100%{
+
+transform:scale(.97);
+filter:brightness(.92);
+
+}
+
+50%{
+
+transform:scale(1.03);
+filter:brightness(1.12);
+
+}
+
+}
+
+@keyframes listening{
+
+0%,100%{
+
+transform:scale(.98);
+
+box-shadow:
+0 0 40px rgba(49,232,255,.45),
+0 0 100px rgba(49,232,255,.18);
+
+}
+
+50%{
+
+transform:scale(1.08);
+
+box-shadow:
+0 0 80px rgba(49,232,255,.75),
+0 0 160px rgba(49,232,255,.35);
+
+}
+
+}
+
+@keyframes thinking{
+
+from{
+
+transform:rotate(0deg);
+
+}
+
+to{
+
+transform:rotate(360deg);
+
+}
+
+}
+
+@keyframes responding{
+
+0%,100%{
+
+transform:scale(.97);
+
+}
+
+50%{
+
+transform:scale(1.07);
+
+}
+
+}
