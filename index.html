@@ -75,9 +75,46 @@
         TAP CORE TO ACTIVATE
       </div>
       
-      <section id="task-panel" class="task-panel" hidden>
-  <span class="task-label">CURRENT TASK</span>
-  <strong id="task-text">TEST</strong>
+      <section id="command-panel" class="command-panel" hidden>
+
+  <form id="command-form">
+
+    <label for="command-input">
+      COMMAND
+    </label>
+
+    <div class="command-entry">
+
+      <input
+        id="command-input"
+        type="text"
+        placeholder="Give JARVIS a task"
+        autocomplete="off"
+        enterkeyhint="done"
+      >
+
+      <button
+        id="command-submit"
+        type="submit"
+        aria-label="Submit command"
+      >
+        ↑
+      </button>
+
+    </div>
+
+  </form>
+
+  <div id="task-result" class="task-result" hidden>
+
+    <span class="task-label">
+      CURRENT TASK
+    </span>
+
+    <strong id="task-text"></strong>
+
+  </div>
+
 </section>
     </main>
 
