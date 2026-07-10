@@ -53,10 +53,32 @@
         </div>
       </button>
 
-      <div class="identity">JARVIS</div>
-<div class="state">ONLINE</div>
-<div class="instruction">SYSTEM READY</div>
+  <div class="presence-status-slot">
+  <div class="status-spacer" aria-hidden="true">
+    <div class="identity">JARVIS</div>
+    <div class="state">ONLINE</div>
+    <div class="instruction">SYSTEM READY</div>
+  </div>
 
+  <section class="live-summary" aria-label="Live system summary">
+    <div class="summary-item">
+      <span class="summary-label">REMINDERS</span>
+      <strong id="summary-reminders">0</strong>
+    </div>
+
+    <div class="summary-item">
+      <span class="summary-label">CALENDAR</span>
+      <strong id="summary-calendar">0</strong>
+    </div>
+
+    <div class="summary-item">
+      <span class="summary-label">OUTLOOK</span>
+      <strong id="summary-outlook" class="summary-status">
+        OFFLINE
+      </strong>
+    </div>
+  </section>
+</div>
   <div class="summary-card">
     <span class="summary-label">CALENDAR</span>
     <strong id="summary-calendar">0 LOADED</strong>
