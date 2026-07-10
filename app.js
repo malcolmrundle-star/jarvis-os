@@ -54,6 +54,12 @@ function importLiveDataFromURL() {
   }
 
   if (imported) {
+    localStorage.setItem(
+  SYNC_KEY,
+  new Date().toISOString()
+);
+
+setTimeout(showSystemStatus, 200);
     window.history.replaceState(
       {},
       document.title,
