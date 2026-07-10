@@ -195,6 +195,22 @@ summaryOutlook: document.getElementById("summary-outlook"),
     elements.taskText.textContent = currentTask;
     elements.taskResult.hidden = !currentTask;
   }
+ function renderLiveSummary() {
+  const reminders = loadReminders();
+  const calendar = loadCalendar();
+
+  if (elements.summaryReminders) {
+    elements.summaryReminders.textContent = `${reminders.length} LOADED`;
+  }
+
+  if (elements.summaryCalendar) {
+    elements.summaryCalendar.textContent = `${calendar.length} LOADED`;
+  }
+
+  if (elements.summaryOutlook) {
+    elements.summaryOutlook.textContent = "NOT CONNECTED";
+  }
+}
 
   function importLiveDataFromURL() {
     const params = new URLSearchParams(window.location.search);
