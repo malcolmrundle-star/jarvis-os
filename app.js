@@ -1,50 +1,72 @@
-const timeElement = document.getElementById("time");
+const time = document.getElementById("time");
 const core = document.getElementById("core");
-const stateLabel = document.querySelector(".state");
+const state = document.querySelector(".state");
 
-const states = [
+const modes = [
   "ONLINE",
   "LISTENING",
   "THINKING",
   "RESPONDING"
 ];
 
-let stateIndex = 0;
-let resetTimer;
+let index = 0;
+let timeout;
 
-function updateTime() {
+function updateClock() {
   const now = new Date();
 
-  timeElement.textContent = now.toLocaleTimeString([], {
+  time.textContent = now.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit"
-  });
+  }).toLowerCase();
 }
 
-function setState(state) {
-  stateLabel.textContent = state;
-  core.dataset.state = state.toLowerCase();
+function setMode(mode) {
 
-  clearTimeout(resetTimer);
+  state.textContent = mode;
 
-  if (state !== "ONLINE") {
-    resetTimer = setTimeout(() => {
-      stateIndex = 0;
-      setState("ONLINE");
-    }, 3000);
+  core.dataset.state = mode.toLowerCase();
+
+  clearTimeout(timeout);
+
+  if (mode !== "ONLINE") {
+
+    timeout = setTimeout(() => {
+
+      index = 0;
+
+      state.textContent = "ONLINE";
+
+      core.dataset.state = "online";
+
+    },3000);
+
   }
+
 }
 
-core.addEventListener("click", () => {
-  stateIndex = (stateIndex + 1) % states.length;
-  setState(states[stateIndex]);
+core.addEventListener("click",()=>{
 
-  if ("vibrate" in navigator) {
-    navigator.vibrate(25);
+  index++;
+
+  if(index>=modes.length){
+
+    index=1;
+
   }
+
+  setMode(modes[index]);
+
+  if(navigator.vibrate){
+
+    navigator.vibrate(20);
+
+  }
+
 });
 
-updateTime();
-setInterval(updateTime, 1000);
+updateClock();
 
-setState("ONLINE");
+setInterval(updateClock,1000);
+
+setMode("ONLINE");
