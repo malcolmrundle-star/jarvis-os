@@ -120,6 +120,9 @@ function updateJarvisInterface(coreState) {
   }
 }
 
+window.addEventListener("load", () => {
+  setTimeout(loadJarvisCore, 250);
+});
 document.addEventListener(
   "DOMContentLoaded",
   loadJarvisCore
