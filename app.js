@@ -268,7 +268,7 @@ function importLiveDataFromURL() {
     );
 
     setTimeout(() => {
-        importRemindersFromURL();
+        importLiveDataFromURL();
       setState("ONLINE");
     }, 1200);
   }
