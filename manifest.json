@@ -1,0 +1,11 @@
+{
+  "name": "JARVIS OS",
+  "short_name": "JARVIS",
+  "description": "Personal AI operating system",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#02070b",
+  "theme_color": "#02070b"
+}
