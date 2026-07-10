@@ -1,0 +1,579 @@
+:root {
+  --bg: #02070b;
+  --bg-deep: #000307;
+  --cyan: #31e8ff;
+  --cyan-bright: #a8f8ff;
+  --cyan-soft: rgba(49, 232, 255, 0.22);
+  --text: #eafcff;
+  --muted: #6f8790;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  min-height: -webkit-fill-available;
+  background: var(--bg-deep);
+  overscroll-behavior: none;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 36%,
+      rgba(0, 170, 210, 0.09),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      #031018 0%,
+      var(--bg) 56%,
+      var(--bg-deep) 100%
+    );
+
+  color: var(--text);
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    sans-serif;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: var(--bg-deep);
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::before {
+  top: 0;
+  height: max(env(safe-area-inset-top), 1px);
+}
+
+body::after {
+  bottom: 0;
+  height: max(env(safe-area-inset-bottom), 1px);
+}
+
+button {
+  font: inherit;
+}
+
+#app {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  padding:
+    calc(env(safe-area-inset-top) + 22px)
+    24px
+    calc(env(safe-area-inset-bottom) + 26px);
+
+  background:
+    radial-gradient(
+      circle at 50% 36%,
+      rgba(0, 170, 210, 0.09),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      #031018 0%,
+      var(--bg) 56%,
+      var(--bg-deep) 100%
+    );
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  background: #53f39b;
+
+  box-shadow:
+    0 0 14px rgba(83, 243, 155, 0.9);
+}
+
+.presence {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  transform: translateY(-2.5vh);
+}
+
+#core {
+  position: relative;
+
+  width: min(74vw, 310px);
+  aspect-ratio: 1;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: transparent;
+
+  cursor: pointer;
+  touch-action: manipulation;
+
+  isolation: isolate;
+
+  transition:
+    transform 0.25s ease;
+}
+
+#core:active {
+  transform: scale(0.97);
+}
+
+.ambient-glow {
+  position: absolute;
+  inset: 19%;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(49, 232, 255, 0.3) 0%,
+      rgba(49, 232, 255, 0.12) 38%,
+      transparent 72%
+    );
+
+  filter: blur(18px);
+
+  animation:
+    ambientBreath 4.8s ease-in-out infinite;
+}
+
+.ring,
+.orbit,
+.reactor {
+  position: absolute;
+
+  inset: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  border-radius: 50%;
+}
+
+.ring {
+  border:
+    1px solid rgba(49, 232, 255, 0.26);
+
+  box-shadow:
+    0 0 18px rgba(49, 232, 255, 0.08),
+    inset 0 0 18px rgba(49, 232, 255, 0.04);
+}
+
+.ring-outer {
+  width: 100%;
+  height: 100%;
+
+  border-style:
+    solid dashed solid dotted;
+
+  animation:
+    rotateClockwise 18s linear infinite;
+}
+
+.ring-middle {
+  width: 77%;
+  height: 77%;
+
+  border-style:
+    dotted solid dashed solid;
+
+  animation:
+    rotateCounter 12s linear infinite;
+}
+
+.ring-inner {
+  width: 55%;
+  height: 55%;
+
+  border-color:
+    rgba(168, 248, 255, 0.45);
+
+  border-width: 2px;
+
+  animation:
+    rotateClockwise 8s linear infinite;
+}
+
+.orbit {
+  width: 86%;
+  height: 86%;
+
+  border:
+    1px solid transparent;
+}
+
+.orbit-one {
+  animation:
+    rotateClockwise 7s linear infinite;
+}
+
+.orbit-two {
+  width: 66%;
+  height: 66%;
+
+  animation:
+    rotateCounter 5s linear infinite;
+}
+
+.particle {
+  position: absolute;
+
+  top: 50%;
+  left: -3px;
+
+  width: 7px;
+  height: 7px;
+
+  margin-top: -3.5px;
+
+  border-radius: 50%;
+
+  background:
+    var(--cyan-bright);
+
+  box-shadow:
+    0 0 8px rgba(168, 248, 255, 0.95),
+    0 0 22px rgba(49, 232, 255, 0.85);
+}
+
+.orbit-two .particle {
+  left: auto;
+  right: -3px;
+
+  width: 5px;
+  height: 5px;
+}
+
+.reactor {
+  width: 37%;
+  height: 37%;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      #d8fdff 0%,
+      #5cecff 20%,
+      #0eb2cd 52%,
+      #043342 100%
+    );
+
+  box-shadow:
+    0 0 28px rgba(49, 232, 255, 0.62),
+    0 0 70px rgba(49, 232, 255, 0.28),
+    inset 0 0 24px rgba(255, 255, 255, 0.14);
+
+  animation:
+    reactorPulse 3.6s ease-in-out infinite;
+}
+
+.reactor::before,
+.reactor::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 11%;
+
+  border-radius: 50%;
+
+  border:
+    1px solid rgba(218, 253, 255, 0.4);
+}
+
+.reactor::after {
+  inset: 27%;
+
+  border-color:
+    rgba(255, 255, 255, 0.65);
+
+  box-shadow:
+    0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.reactor-grid {
+  position: absolute;
+
+  inset: 0;
+
+  opacity: 0.18;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 8px,
+      rgba(255, 255, 255, 0.25) 9px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 8px,
+      rgba(255, 255, 255, 0.18) 9px
+    );
+
+  animation:
+    gridShift 5s linear infinite;
+}
+
+.reactor-centre {
+  position: absolute;
+
+  inset: 37%;
+
+  border-radius: 50%;
+
+  background:
+    #efffff;
+
+  box-shadow:
+    0 0 10px #efffff,
+    0 0 24px rgba(168, 248, 255, 0.95);
+}
+
+.identity {
+  margin-top: 74px;
+
+  font-size: 13px;
+  letter-spacing: 0.5em;
+
+  color:
+    rgba(234, 252, 255, 0.56);
+}
+
+.state {
+  margin-top: 14px;
+
+  font-size: 15px;
+  letter-spacing: 0.62em;
+
+  color:
+    var(--cyan);
+
+  text-shadow:
+    0 0 16px var(--cyan-soft);
+}
+
+.instruction {
+  margin-top: 30px;
+
+  font-size: 10px;
+  letter-spacing: 0.34em;
+
+  color:
+    rgba(111, 135, 144, 0.7);
+}
+
+#core[data-state="listening"] .ring-outer,
+#core[data-state="listening"] .ring-middle {
+  animation-duration: 3.2s;
+}
+
+#core[data-state="listening"] .ambient-glow {
+  animation:
+    listeningGlow 1.15s ease-in-out infinite;
+}
+
+#core[data-state="thinking"] .ring-outer {
+  animation-duration: 2.2s;
+}
+
+#core[data-state="thinking"] .ring-middle {
+  animation-duration: 1.7s;
+}
+
+#core[data-state="thinking"] .ring-inner {
+  animation-duration: 1.15s;
+}
+
+#core[data-state="thinking"] .particle {
+  animation:
+    particleFlicker 0.55s ease-in-out infinite alternate;
+}
+
+#core[data-state="responding"] .reactor {
+  animation:
+    respondingPulse 0.58s ease-in-out infinite;
+}
+
+#core[data-state="responding"] .ambient-glow {
+  animation:
+    respondingGlow 0.58s ease-in-out infinite;
+}
+
+@keyframes rotateClockwise {
+  to {
+    transform:
+      translate(-50%, -50%)
+      rotate(360deg);
+  }
+}
+
+@keyframes rotateCounter {
+  to {
+    transform:
+      translate(-50%, -50%)
+      rotate(-360deg);
+  }
+}
+
+@keyframes ambientBreath {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.58;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes reactorPulse {
+  0%,
+  100% {
+    transform:
+      translate(-50%, -50%)
+      scale(0.96);
+
+    filter:
+      brightness(0.92);
+  }
+
+  50% {
+    transform:
+      translate(-50%, -50%)
+      scale(1.04);
+
+    filter:
+      brightness(1.16);
+  }
+}
+
+@keyframes gridShift {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+@keyframes listeningGlow {
+  0%,
+  100% {
+    transform: scale(0.94);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+@keyframes respondingGlow {
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+}
+
+@keyframes respondingPulse {
+  0%,
+  100% {
+    transform:
+      translate(-50%, -50%)
+      scale(0.94);
+
+    filter:
+      brightness(0.92);
+  }
+
+  50% {
+    transform:
+      translate(-50%, -50%)
+      scale(1.08);
+
+    filter:
+      brightness(1.35);
+  }
+}
+
+@keyframes particleFlicker {
+  from {
+    opacity: 0.55;
+    transform: scale(0.75);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+}
+
+@media (max-height: 760px) {
+  #core {
+    width: min(64vw, 260px);
+  }
+
+  .identity {
+    margin-top: 56px;
+  }
+}
