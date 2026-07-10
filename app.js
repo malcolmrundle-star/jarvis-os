@@ -288,3 +288,6 @@ const systemPanelTitle =
 
   readReminderDataFromURL();
 });
+systemPanelClose?.addEventListener("click", () => {
+  systemPanel.hidden = true;
+});
