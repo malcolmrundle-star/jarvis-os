@@ -25,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
     commandInput: document.getElementById("command-input"),
     taskResult: document.getElementById("task-result"),
     taskText: document.getElementById("task-text")
+    summaryReminders: document.getElementById("summary-reminders"),
+summaryCalendar: document.getElementById("summary-calendar"),
+summaryOutlook: document.getElementById("summary-outlook"),
   };
 
   function escapeHTML(value) {
