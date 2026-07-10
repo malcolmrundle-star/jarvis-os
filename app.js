@@ -10,30 +10,36 @@ document.addEventListener("DOMContentLoaded", () => {
     core: document.getElementById("core"),
     state: document.querySelector(".state"),
     instruction: document.querySelector(".instruction"),
+
     refreshButton: document.getElementById("refresh-button"),
     briefingButton: document.getElementById("briefing-button"),
     remindersButton: document.getElementById("reminders-button"),
     calendarButton: document.getElementById("calendar-button"),
     outlookButton: document.getElementById("outlook-button"),
+
     systemPanel: document.getElementById("system-panel"),
     systemPanelTitle: document.getElementById("system-panel-title"),
     systemPanelContent: document.getElementById("system-panel-content"),
     systemPanelClose: document.getElementById("system-panel-close"),
+
     briefingStatus: document.getElementById("briefing-status"),
     remindersList: document.getElementById("reminders-list"),
+
     commandForm: document.getElementById("command-form"),
     commandInput: document.getElementById("command-input"),
+
     taskResult: document.getElementById("task-result"),
-    taskText: document.getElementById("task-text")
+    taskText: document.getElementById("task-text"),
+
     summaryReminders: document.getElementById("summary-reminders"),
-summaryCalendar: document.getElementById("summary-calendar"),
-summaryOutlook: document.getElementById("summary-outlook"),
+    summaryCalendar: document.getElementById("summary-calendar"),
+    summaryOutlook: document.getElementById("summary-outlook")
   };
 
   function escapeHTML(value) {
-    const node = document.createElement("div");
-    node.textContent = String(value ?? "");
-    return node.innerHTML;
+    const element = document.createElement("div");
+    element.textContent = String(value ?? "");
+    return element.innerHTML;
   }
 
   function saveList(key, items) {
@@ -42,10 +48,10 @@ summaryOutlook: document.getElementById("summary-outlook"),
 
   function loadList(key) {
     try {
-      const saved = JSON.parse(localStorage.getItem(key));
-      return Array.isArray(saved) ? saved : [];
+      const value = JSON.parse(localStorage.getItem(key));
+      return Array.isArray(value) ? value : [];
     } catch (error) {
-      console.error("JARVIS storage read failed:", error);
+      console.error("JARVIS storage error:", error);
       return [];
     }
   }
@@ -53,11 +59,12 @@ summaryOutlook: document.getElementById("summary-outlook"),
   function parseList(value) {
     if (!value) return [];
 
-    const decoded = String(value).trim();
-    if (!decoded) return [];
+    const text = String(value).trim();
+
+    if (!text) return [];
 
     try {
-      const parsed = JSON.parse(decoded);
+      const parsed = JSON.parse(text);
 
       if (Array.isArray(parsed)) {
         return parsed
@@ -65,25 +72,17 @@ summaryOutlook: document.getElementById("summary-outlook"),
           .filter(Boolean);
       }
     } catch {
-      // Apple Shortcuts may send plain text instead of JSON.
+      // Shortcuts may send normal text.
     }
 
-    return decoded
+    return text
       .split(/\|\|\||\r?\n/)
       .map(item => item.trim())
       .filter(Boolean);
   }
 
-  function saveReminders(items) {
-    saveList(STORAGE.reminders, items);
-  }
-
   function loadReminders() {
     return loadList(STORAGE.reminders);
-  }
-
-  function saveCalendar(items) {
-    saveList(STORAGE.calendar, items);
   }
 
   function loadCalendar() {
@@ -94,16 +93,16 @@ summaryOutlook: document.getElementById("summary-outlook"),
     return localStorage.getItem(STORAGE.sync) || "";
   }
 
-  function formatSyncTime(isoValue) {
-    if (!isoValue) return "NOT SYNCED";
+  function formatSyncTime(value) {
+    if (!value) return "NOT SYNCED";
 
-    const value = new Date(isoValue);
+    const date = new Date(value);
 
-    if (Number.isNaN(value.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       return "NOT SYNCED";
     }
 
-    return value.toLocaleTimeString([], {
+    return date.toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit"
     });
@@ -119,19 +118,18 @@ summaryOutlook: document.getElementById("summary-outlook"),
   }
 
   function setState(state, message) {
-    const normalizedState = String(state || "ONLINE").toUpperCase();
+    const status = String(state || "ONLINE").toUpperCase();
 
     if (elements.state) {
-      elements.state.textContent = normalizedState;
+      elements.state.textContent = status;
     }
 
     if (elements.core) {
-      elements.core.dataset.state = normalizedState.toLowerCase();
+      elements.core.dataset.state = status.toLowerCase();
     }
 
-    const fallbackMessages = {
+    const messages = {
       ONLINE: "SYSTEM READY",
-      LISTENING: "AWAITING COMMAND",
       THINKING: "PROCESSING",
       RESPONDING: "COMMAND RECEIVED",
       COMPLETE: "UPDATED"
@@ -139,7 +137,7 @@ summaryOutlook: document.getElementById("summary-outlook"),
 
     if (elements.instruction) {
       elements.instruction.textContent =
-        message || fallbackMessages[normalizedState] || "";
+        message || messages[status] || "";
     }
   }
 
@@ -155,11 +153,35 @@ summaryOutlook: document.getElementById("summary-outlook"),
     elements.systemPanelTitle.textContent = title;
     elements.systemPanelContent.innerHTML = content;
     elements.systemPanel.hidden = false;
+
+    elements.systemPanel.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
   }
 
   function closePanel() {
     if (elements.systemPanel) {
       elements.systemPanel.hidden = true;
+    }
+  }
+
+  function renderLiveSummary() {
+    const reminders = loadReminders();
+    const calendar = loadCalendar();
+
+    if (elements.summaryReminders) {
+      elements.summaryReminders.textContent =
+        String(reminders.length);
+    }
+
+    if (elements.summaryCalendar) {
+      elements.summaryCalendar.textContent =
+        String(calendar.length);
+    }
+
+    if (elements.summaryOutlook) {
+      elements.summaryOutlook.textContent = "OFFLINE";
     }
   }
 
@@ -175,15 +197,19 @@ summaryOutlook: document.getElementById("summary-outlook"),
 
     if (!elements.remindersList) return;
 
-    elements.remindersList.innerHTML = reminders.length
-      ? reminders
-          .slice(0, 5)
-          .map(
-            (reminder, index) =>
-              `<div>${index + 1}. ${escapeHTML(reminder)}</div>`
-          )
-          .join("")
-      : "No reminder data loaded.";
+    if (!reminders.length) {
+      elements.remindersList.textContent =
+        "No reminder data loaded.";
+      return;
+    }
+
+    elements.remindersList.innerHTML = reminders
+      .slice(0, 5)
+      .map(
+        (reminder, index) =>
+          `<div>${index + 1}. ${escapeHTML(reminder)}</div>`
+      )
+      .join("");
   }
 
   function renderCurrentTask() {
@@ -195,47 +221,46 @@ summaryOutlook: document.getElementById("summary-outlook"),
     elements.taskText.textContent = currentTask;
     elements.taskResult.hidden = !currentTask;
   }
- function renderLiveSummary() {
-  const reminders = loadReminders();
-  const calendar = loadCalendar();
 
-  if (elements.summaryReminders) {
-    elements.summaryReminders.textContent =
-      String(reminders.length);
+  function refreshInterface() {
+    renderBriefing();
+    renderLiveSummary();
+    renderCurrentTask();
   }
 
-  if (elements.summaryCalendar) {
-    elements.summaryCalendar.textContent =
-      String(calendar.length);
-  }
-
-  if (elements.summaryOutlook) {
-    elements.summaryOutlook.textContent =
-      "OFFLINE";
-  }
-}
   function importLiveDataFromURL() {
     const params = new URLSearchParams(window.location.search);
     let imported = false;
 
     if (params.has("reminders")) {
-      saveReminders(parseList(params.get("reminders")));
+      saveList(
+        STORAGE.reminders,
+        parseList(params.get("reminders"))
+      );
+
       imported = true;
     }
 
     if (params.has("calendar")) {
-      saveCalendar(parseList(params.get("calendar")));
+      saveList(
+        STORAGE.calendar,
+        parseList(params.get("calendar"))
+      );
+
       imported = true;
     }
 
     if (!imported) {
-      renderBriefing();
+      refreshInterface();
       return false;
     }
 
-    localStorage.setItem(STORAGE.sync, new Date().toISOString());
+    localStorage.setItem(
+      STORAGE.sync,
+      new Date().toISOString()
+    );
 
-    renderBriefing();
+    refreshInterface();
     setState("COMPLETE", "SHORTCUT DATA IMPORTED");
 
     window.history.replaceState(
@@ -253,7 +278,7 @@ summaryOutlook: document.getElementById("summary-outlook"),
 
   function showBriefing() {
     const reminders = loadReminders();
-    const events = loadCalendar();
+    const calendar = loadCalendar();
 
     const currentTask =
       window.JarvisMemory?.loadMemory?.()?.currentTask ||
@@ -263,12 +288,22 @@ summaryOutlook: document.getElementById("summary-outlook"),
       "DAILY BRIEFING",
       `
         <div><strong>MODE</strong> BUILD</div>
+
         <div>
           <strong>CURRENT TASK</strong>
           ${escapeHTML(currentTask)}
         </div>
-        <div><strong>REMINDERS</strong> ${reminders.length}</div>
-        <div><strong>CALENDAR</strong> ${events.length}</div>
+
+        <div>
+          <strong>REMINDERS</strong>
+          ${reminders.length}
+        </div>
+
+        <div>
+          <strong>CALENDAR</strong>
+          ${calendar.length}
+        </div>
+
         <div>
           <strong>LAST SYNC</strong>
           ${escapeHTML(formatSyncTime(getLastSync()))}
@@ -280,29 +315,43 @@ summaryOutlook: document.getElementById("summary-outlook"),
   function showReminders() {
     const reminders = loadReminders();
 
-    const content = reminders.length
-      ? reminders
-          .map(
-            (reminder, index) =>
-              `<div>${index + 1}. ${escapeHTML(reminder)}</div>`
-          )
-          .join("")
-      : "<div>STATUS No JARVIS reminders loaded</div>";
+    if (!reminders.length) {
+      openPanel(
+        "REMINDERS",
+        "<div>No reminders loaded.</div>"
+      );
+
+      return;
+    }
+
+    const content = reminders
+      .map(
+        (reminder, index) =>
+          `<div>${index + 1}. ${escapeHTML(reminder)}</div>`
+      )
+      .join("");
 
     openPanel("REMINDERS", content);
   }
 
   function showCalendar() {
-    const events = loadCalendar();
+    const calendar = loadCalendar();
 
-    const content = events.length
-      ? events
-          .map(
-            (event, index) =>
-              `<div>${index + 1}. ${escapeHTML(event)}</div>`
-          )
-          .join("")
-      : "<div>STATUS No calendar events loaded</div>";
+    if (!calendar.length) {
+      openPanel(
+        "CALENDAR",
+        "<div>No calendar events loaded.</div>"
+      );
+
+      return;
+    }
+
+    const content = calendar
+      .map(
+        (event, index) =>
+          `<div>${index + 1}. ${escapeHTML(event)}</div>`
+      )
+      .join("");
 
     openPanel("CALENDAR", content);
   }
@@ -311,17 +360,15 @@ summaryOutlook: document.getElementById("summary-outlook"),
     openPanel(
       "OUTLOOK",
       `
-        <div>STATUS Not connected</div>
-        <div>IMPORTANT 0 loaded</div>
-        <div>NEXT Connect email briefing</div>
+        <div><strong>STATUS</strong> NOT CONNECTED</div>
+        <div>Outlook integration is the next service connection.</div>
       `
     );
   }
 
   function showSystemStatus() {
     const reminders = loadReminders();
-    const events = loadCalendar();
-    const lastSync = getLastSync();
+    const calendar = loadCalendar();
 
     openPanel(
       "SYSTEM STATUS",
@@ -331,10 +378,11 @@ summaryOutlook: document.getElementById("summary-outlook"),
           MEMORY ${window.JarvisMemory ? "ONLINE" : "OFFLINE"}
         </div>
         <div>REMINDERS ${reminders.length} LOADED</div>
-        <div>CALENDAR ${events.length} LOADED</div>
+        <div>CALENDAR ${calendar.length} LOADED</div>
         <div>OUTLOOK NOT CONNECTED</div>
         <div>
-          LAST SYNC ${escapeHTML(formatSyncTime(lastSync))}
+          LAST SYNC
+          ${escapeHTML(formatSyncTime(getLastSync()))}
         </div>
       `
     );
@@ -344,19 +392,14 @@ summaryOutlook: document.getElementById("summary-outlook"),
     setState("THINKING");
 
     await new Promise(resolve => {
-      window.setTimeout(resolve, 450);
+      window.setTimeout(resolve, 350);
     });
 
-    const imported = importLiveDataFromURL();
-
-    renderBriefing();
-    renderCurrentTask();
-renderLiveSummary();
-    if (!imported) {
-      setState("COMPLETE");
-    }
-
+    importLiveDataFromURL();
+    refreshInterface();
     showSystemStatus();
+
+    setState("COMPLETE");
 
     window.setTimeout(() => {
       setState("ONLINE");
@@ -376,7 +419,7 @@ renderLiveSummary();
     openPanel(
       "COMMAND ACCEPTED",
       `
-        <div>CURRENT TASK</div>
+        <div><strong>CURRENT TASK</strong></div>
         <div>${escapeHTML(task)}</div>
       `
     );
@@ -437,37 +480,61 @@ renderLiveSummary();
     saveTask(command);
   }
 
-  elements.refreshButton?.addEventListener("click", runRefresh);
-  elements.briefingButton?.addEventListener("click", showBriefing);
-  elements.remindersButton?.addEventListener("click", showReminders);
-  elements.calendarButton?.addEventListener("click", showCalendar);
-  elements.outlookButton?.addEventListener("click", showOutlook);
-  elements.systemPanelClose?.addEventListener("click", closePanel);
-  elements.core?.addEventListener("click", showBriefing);
+  elements.refreshButton?.addEventListener(
+    "click",
+    runRefresh
+  );
 
-  elements.commandForm?.addEventListener("submit", event => {
-    event.preventDefault();
+  elements.briefingButton?.addEventListener(
+    "click",
+    showBriefing
+  );
 
-    const command = elements.commandInput?.value || "";
+  elements.remindersButton?.addEventListener(
+    "click",
+    showReminders
+  );
 
-    runCommand(command);
+  elements.calendarButton?.addEventListener(
+    "click",
+    showCalendar
+  );
 
-    if (elements.commandInput) {
-      elements.commandInput.value = "";
-      elements.commandInput.blur();
+  elements.outlookButton?.addEventListener(
+    "click",
+    showOutlook
+  );
+
+  elements.systemPanelClose?.addEventListener(
+    "click",
+    closePanel
+  );
+
+  elements.core?.addEventListener(
+    "click",
+    showBriefing
+  );
+
+  elements.commandForm?.addEventListener(
+    "submit",
+    event => {
+      event.preventDefault();
+
+      const command = elements.commandInput?.value || "";
+
+      runCommand(command);
+
+      if (elements.commandInput) {
+        elements.commandInput.value = "";
+        elements.commandInput.blur();
+      }
     }
-  });
+  );
 
   updateClock();
-
   window.setInterval(updateClock, 1000);
 
-  renderCurrentTask();
-importLiveDataFromURL();
-renderBriefing();
-renderLiveSummary();
-
-  if (!getLastSync()) {
-    setState("ONLINE");
-  }
+  importLiveDataFromURL();
+  refreshInterface();
+  setState("ONLINE");
 });
