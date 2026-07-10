@@ -738,3 +738,50 @@ button {
   font-weight: 500;
   letter-spacing: 0.16em;
 }
+/* Complete — green */
+#core[data-state="complete"] {
+  filter: hue-rotate(245deg) saturate(1.25) brightness(1.08);
+}
+
+#core[data-state="complete"] .reactor {
+  animation: completePulse 0.9s ease-in-out infinite;
+}
+
+#core[data-state="complete"] .ambient-glow {
+  background:
+    radial-gradient(
+      circle,
+      rgba(83, 243, 155, 0.42) 0%,
+      rgba(83, 243, 155, 0.16) 40%,
+      transparent 72%
+    );
+}
+
+#core[data-state="complete"] .particle {
+  background: #b8ffd5;
+
+  box-shadow:
+    0 0 10px rgba(184, 255, 213, 1),
+    0 0 26px rgba(83, 243, 155, 0.9);
+}
+
+@keyframes completePulse {
+  0%,
+  100% {
+    transform:
+      translate(-50%, -50%)
+      scale(0.98);
+
+    filter:
+      brightness(1);
+  }
+
+  50% {
+    transform:
+      translate(-50%, -50%)
+      scale(1.08);
+
+    filter:
+      brightness(1.35);
+  }
+}
