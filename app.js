@@ -388,19 +388,20 @@ summaryReminders: document.getElementById("summary-reminders"),
   }
 
   async function runRefresh() {
-  setState("THINKING", "UPDATING SYSTEM");
+  setState("THINKING", "REFRESHING SYSTEM");
 
-  const returnURL = encodeURIComponent(
-    window.location.origin + window.location.pathname
-  );
+  await new Promise(resolve => {
+    window.setTimeout(resolve, 400);
+  });
 
-  const shortcutURL =
-    "shortcuts://run-shortcut" +
-    "?name=" + encodeURIComponent("Jarvis Launch") +
-    "&input=text" +
-    "&text=" + returnURL;
+  refreshInterface();
+  showSystemStatus();
 
-  window.location.href = shortcutURL;
+  setState("COMPLETE", "SYSTEM REFRESHED");
+
+  window.setTimeout(() => {
+    setState("ONLINE");
+  }, 1000);
 }
 
   function saveTask(command) {
