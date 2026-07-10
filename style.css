@@ -577,3 +577,44 @@ button {
     margin-top: 56px;
   }
 }
+.task-panel {
+  width: min(82vw, 360px);
+  margin-top: 28px;
+  padding: 17px 20px;
+  border: 1px solid rgba(49, 232, 255, 0.2);
+  border-radius: 18px;
+  background: rgba(4, 15, 22, 0.7);
+  text-align: center;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 0 35px rgba(49, 232, 255, 0.08);
+}
+
+.task-label {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0.35em;
+}
+
+#task-text {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+}
+
+/* Listening — blue */
+#core[data-state="listening"] {
+  filter: hue-rotate(0deg);
+}
+
+/* Thinking — violet */
+#core[data-state="thinking"] {
+  filter: hue-rotate(75deg);
+}
+
+/* Responding — green */
+#core[data-state="responding"] {
+  filter: hue-rotate(145deg);
+}
