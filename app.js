@@ -29,7 +29,8 @@ function setState(nextState) {
     ONLINE: "TAP CORE TO ACTIVATE",
     LISTENING: "AWAITING COMMAND",
     THINKING: "PROCESSING COMMAND",
-    RESPONDING: "COMMAND ACCEPTED"
+    RESPONDING: "COMMAND ACCEPTED",
+    COMPLETE: "TASK COMPLETE"
   };
 
   instruction.textContent = messages[nextState];
@@ -42,9 +43,7 @@ function delay(milliseconds) {
 }
 
 function openCommandPanel() {
-  if (busy) {
-    return;
-  }
+  if (busy) return;
 
   setState("LISTENING");
 
@@ -56,31 +55,31 @@ function openCommandPanel() {
   }, 150);
 }
 
-function closeKeyboard() {
-  commandInput.blur();
-}
-
 async function processCommand(command) {
   busy = true;
 
-  closeKeyboard();
-  setState("THINKING");
+  commandInput.blur();
 
+  setState("THINKING");
   await delay(1200);
 
   taskText.textContent = command.toUpperCase();
   taskResult.hidden = false;
 
   setState("RESPONDING");
+  await delay(1400);
+
+  setState("COMPLETE");
 
   if ("vibrate" in navigator) {
-    navigator.vibrate([25, 40, 25]);
+    navigator.vibrate([30, 60, 30]);
   }
 
   await delay(1800);
 
   commandPanel.hidden = true;
   commandInput.value = "";
+  taskResult.hidden = true;
 
   setState("ONLINE");
   busy = false;
@@ -91,9 +90,7 @@ core.addEventListener("click", openCommandPanel);
 commandForm.addEventListener("submit", event => {
   event.preventDefault();
 
-  if (busy) {
-    return;
-  }
+  if (busy) return;
 
   const command = commandInput.value.trim();
 
