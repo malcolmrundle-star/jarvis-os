@@ -5,8 +5,6 @@ const instruction = document.querySelector(".instruction");
 const taskPanel = document.getElementById("task-panel");
 const taskText = document.getElementById("task-text");
 
-let resetTimer;
-
 function updateClock() {
   const now = new Date();
 
@@ -16,54 +14,55 @@ function updateClock() {
   });
 }
 
-function setState(state) {
-  stateLabel.textContent = state;
-  core.dataset.state = state.toLowerCase();
+function setState(nextState) {
+  stateLabel.textContent = nextState;
+  core.dataset.state = nextState.toLowerCase();
 
-  const instructions = {
+  const messages = {
     ONLINE: "TAP CORE TO ACTIVATE",
-    LISTENING: "ENTERING TASK",
+    LISTENING: "ENTER YOUR TASK",
     THINKING: "PROCESSING TASK",
     RESPONDING: "TASK RECEIVED"
   };
 
-  instruction.textContent = instructions[state];
-
-  clearTimeout(resetTimer);
+  instruction.textContent = messages[nextState];
 }
 
-function showTask(task) {
-  taskText.textContent = task.toUpperCase();
-  taskPanel.hidden = false;
+function delay(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
-async function runTaskSequence() {
+async function activateJarvis() {
   setState("LISTENING");
 
-  const task = window.prompt("What task shall I record?", "TEST");
+  await delay(400);
 
-  if (!task || !task.trim()) {
+  const enteredTask = prompt("What task shall I record?", "TEST");
+
+  if (!enteredTask || !enteredTask.trim()) {
     setState("ONLINE");
     return;
   }
 
   setState("THINKING");
 
-  await new Promise(resolve => setTimeout(resolve, 1200));
+  await delay(1200);
 
-  showTask(task.trim());
+  taskText.textContent = enteredTask.trim().toUpperCase();
+  taskPanel.hidden = false;
+
   setState("RESPONDING");
 
   if ("vibrate" in navigator) {
-    navigator.vibrate([25, 50, 25]);
+    navigator.vibrate([25, 40, 25]);
   }
 
-  resetTimer = setTimeout(() => {
-    setState("ONLINE");
-  }, 2200);
+  await delay(2000);
+
+  setState("ONLINE");
 }
 
-core.addEventListener("click", runTaskSequence);
+core.addEventListener("click", activateJarvis);
 
 updateClock();
 setInterval(updateClock, 1000);
