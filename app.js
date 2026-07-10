@@ -228,33 +228,34 @@ const systemPanelTitle =
 }
 
   function showServices() {
-    systemPanelContent.innerHTML = `
-      <div class="diagnostic-row">
-        <span>REMINDERS</span>
-        <span class="diagnostic-value">
-          CONNECTED
-        </span>
-      </div>
-
-      <div class="diagnostic-row">
-        <span>CALENDAR</span>
-        <span>COMING NEXT</span>
-      </div>
-
-      <div class="diagnostic-row">
-        <span>OUTLOOK</span>
-        <span>COMING NEXT</span>
-      </div>
-
-      <div class="diagnostic-row">
-        <span>VOICE</span>
-        <span>PLANNED</span>
-      </div>
-    `;
-
-    systemPanel.hidden =
-      !systemPanel.hidden;
+  if (systemPanelTitle) {
+    systemPanelTitle.textContent = "SERVICES";
   }
+
+  systemPanelContent.innerHTML = `
+    <div class="diagnostic-row">
+      <span>REMINDERS</span>
+      <span class="diagnostic-value">CONNECTED</span>
+    </div>
+
+    <div class="diagnostic-row">
+      <span>CALENDAR</span>
+      <span>COMING NEXT</span>
+    </div>
+
+    <div class="diagnostic-row">
+      <span>OUTLOOK</span>
+      <span>COMING NEXT</span>
+    </div>
+
+    <div class="diagnostic-row">
+      <span>VOICE</span>
+      <span>PLANNED</span>
+    </div>
+  `;
+
+  systemPanel.hidden = false;
+}
 
   refreshButton?.addEventListener(
     "click",
