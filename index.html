@@ -11,7 +11,6 @@
   <title>JARVIS</title>
 
   <meta name="theme-color" content="#02070b">
-
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="JARVIS">
   <meta
@@ -25,34 +24,59 @@
 
 <body>
 
-<div id="app">
+  <div id="app">
 
-<header>
+    <header class="top-bar">
+      <div class="system-status">
+        <span class="status-dot"></span>
+        <span>JARVIS OS</span>
+      </div>
 
-<div class="status">
-ONLINE
-</div>
+      <div id="time">00:00</div>
+    </header>
 
-<div class="time" id="time">
-13:47
-</div>
+    <main class="presence">
 
-</header>
+      <button
+        id="core"
+        type="button"
+        aria-label="Activate JARVIS"
+        data-state="online"
+      >
 
-<main>
+        <span class="ambient-glow"></span>
 
-<div id="core"></div>
+        <span class="ring ring-outer"></span>
+        <span class="ring ring-middle"></span>
+        <span class="ring ring-inner"></span>
 
-<div class="state">
-JARVIS
-</div>
+        <span class="orbit orbit-one">
+          <span class="particle"></span>
+        </span>
 
-</main>
+        <span class="orbit orbit-two">
+          <span class="particle"></span>
+        </span>
 
-</div>
+        <span class="reactor">
+          <span class="reactor-grid"></span>
+          <span class="reactor-centre"></span>
+        </span>
 
-<script src="app.js"></script>
+      </button>
+
+      <div class="identity">JARVIS</div>
+      <div class="state">ONLINE</div>
+
+      <div class="instruction">
+        TAP CORE TO ACTIVATE
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="./app.js"></script>
 
 </body>
-
 </html>
