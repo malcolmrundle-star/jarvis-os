@@ -190,21 +190,26 @@ function importLiveDataFromURL() {
   }
 
   function showCalendar() {
-    openPanel(
-      "CALENDAR",
-      `
-        <div class="diagnostic-row">
-          <span>TODAY</span>
-          <span>No events loaded</span>
-        </div>
+  const events = loadCalendar();
 
+  const content = events.length
+    ? events
+        .map((event, index) => `
+          <div class="diagnostic-row">
+            <span>${index + 1}</span>
+            <span>${escapeHTML(event)}</span>
+          </div>
+        `)
+        .join("")
+    : `
         <div class="diagnostic-row">
-          <span>NEXT</span>
-          <span>Calendar integration pending</span>
+          <span>STATUS</span>
+          <span>No calendar events today</span>
         </div>
-      `
-    );
-  }
+      `;
+
+  openPanel("CALENDAR", content);
+}
 
   function showOutlook() {
     openPanel(
