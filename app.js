@@ -2,15 +2,9 @@ const timeElement = document.getElementById("time");
 const core = document.getElementById("core");
 const stateLabel = document.querySelector(".state");
 const instruction = document.querySelector(".instruction");
+const taskPanel = document.getElementById("task-panel");
+const taskText = document.getElementById("task-text");
 
-const states = [
-  "ONLINE",
-  "LISTENING",
-  "THINKING",
-  "RESPONDING"
-];
-
-let currentState = 0;
 let resetTimer;
 
 function updateClock() {
@@ -23,69 +17,54 @@ function updateClock() {
 }
 
 function setState(state) {
-
   stateLabel.textContent = state;
-
   core.dataset.state = state.toLowerCase();
 
-  switch (state) {
+  const instructions = {
+    ONLINE: "TAP CORE TO ACTIVATE",
+    LISTENING: "ENTERING TASK",
+    THINKING: "PROCESSING TASK",
+    RESPONDING: "TASK RECEIVED"
+  };
 
-    case "ONLINE":
-      instruction.textContent = "TAP CORE TO ACTIVATE";
-      break;
-
-    case "LISTENING":
-      instruction.textContent = "LISTENING...";
-      break;
-
-    case "THINKING":
-      instruction.textContent = "PROCESSING";
-      break;
-
-    case "RESPONDING":
-      instruction.textContent = "RESPONDING";
-      break;
-
-  }
+  instruction.textContent = instructions[state];
 
   clearTimeout(resetTimer);
-
-  if (state !== "ONLINE") {
-
-    resetTimer = setTimeout(() => {
-
-      currentState = 0;
-
-      setState("ONLINE");
-
-    },3000);
-
-  }
-
 }
 
-core.addEventListener("click",()=>{
+function showTask(task) {
+  taskText.textContent = task.toUpperCase();
+  taskPanel.hidden = false;
+}
 
-  currentState++;
+async function runTaskSequence() {
+  setState("LISTENING");
 
-  if(currentState>=states.length){
+  const task = window.prompt("What task shall I record?", "TEST");
 
-    currentState=1;
-
+  if (!task || !task.trim()) {
+    setState("ONLINE");
+    return;
   }
 
-  setState(states[currentState]);
+  setState("THINKING");
 
-  if(navigator.vibrate){
+  await new Promise(resolve => setTimeout(resolve, 1200));
 
-    navigator.vibrate(20);
+  showTask(task.trim());
+  setState("RESPONDING");
 
+  if ("vibrate" in navigator) {
+    navigator.vibrate([25, 50, 25]);
   }
 
-});
+  resetTimer = setTimeout(() => {
+    setState("ONLINE");
+  }, 2200);
+}
+
+core.addEventListener("click", runTaskSequence);
 
 updateClock();
-
-setInterval(updateClock,1000);
-
+setInterval(updateClock, 1000);
 setState("ONLINE");
