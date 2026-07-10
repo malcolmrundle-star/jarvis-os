@@ -349,7 +349,7 @@ summaryOutlook: document.getElementById("summary-outlook"),
 
     renderBriefing();
     renderCurrentTask();
-
+renderLiveSummary();
     if (!imported) {
       setState("COMPLETE");
     }
