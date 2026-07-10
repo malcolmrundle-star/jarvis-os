@@ -81,33 +81,45 @@ TAP CORE TO ACTIVATE
 
 </main>
 
+<section id="briefing-panel" class="briefing-panel">
+
+  <div class="briefing-header">
+    <span>DAILY BRIEFING</span>
+    <span id="briefing-status">READY</span>
+  </div>
+
+  <div class="briefing-section">
+    <span class="briefing-label">REMINDERS</span>
+
+    <div id="reminders-list">
+      No reminder data loaded.
+    </div>
+  </div>
+
+</section>
+
+<nav class="control-bar">
+
+  <button id="refresh-button" type="button">
+    REFRESH
+  </button>
+
+  <button id="diagnostics-button" type="button">
+    DIAGNOSTICS
+  </button>
+
+  <button id="services-button" type="button">
+    SERVICES
+  </button>
+
+</nav>
+
 <section
-id="command-panel"
-class="command-panel"
-hidden>
-<section id="decision-panel" class="decision-panel">
-
-  <div class="decision-header">
-    <span>JARVIS DECISION ENGINE</span>
-    <span id="decision-status">READY</span>
-  </div>
-
-  <div class="decision-content">
-
-    <span class="decision-label">
-      NEXT TASK
-    </span>
-
-    <strong id="next-task">
-      Awaiting task data
-    </strong>
-
-    <span id="decision-reason">
-      JARVIS will select the highest-priority action.
-    </span>
-
-  </div>
-
+  id="system-panel"
+  class="system-panel"
+  hidden
+>
+  <div id="system-panel-content"></div>
 </section>
 <form id="command-form">
 
