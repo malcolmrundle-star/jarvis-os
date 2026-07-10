@@ -1,126 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
-  >
+<meta charset="UTF-8">
 
-  <title>JARVIS</title>
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-  <meta name="theme-color" content="#000307">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="JARVIS">
-  <meta
-    name="apple-mobile-web-app-status-bar-style"
-    content="black-translucent"
-  >
+<title>JARVIS OS</title>
 
-  <link rel="manifest" href="./manifest.json">
-  <link rel="stylesheet" href="./style.css">
+<meta name="theme-color" content="#000307">
+
+<link rel="manifest" href="./manifest.json">
+
+<link rel="stylesheet" href="./style.css?v=6">
+
 </head>
 
 <body>
 
-  <div id="app">
+<div id="app">
 
-    <header class="top-bar">
+<header class="top-bar">
 
-      <div class="system-status">
-        <span class="status-dot"></span>
-        <span>JARVIS OS</span>
-      </div>
+<div class="system-status">
 
-      <div id="time">00:00</div>
+<span class="status-dot"></span>
 
-    </header>
+<span>JARVIS OS</span>
 
-    <main class="presence">
+</div>
 
-      <button
-        id="core"
-        type="button"
-        aria-label="Activate JARVIS"
-        data-state="online"
-      >
+<div id="time"></div>
 
-        <span class="ambient-glow"></span>
+</header>
 
-        <span class="ring ring-outer"></span>
-        <span class="ring ring-middle"></span>
-        <span class="ring ring-inner"></span>
+<main class="presence">
 
-        <span class="orbit orbit-one">
-          <span class="particle"></span>
-        </span>
+<button id="core">
 
-        <span class="orbit orbit-two">
-          <span class="particle"></span>
-        </span>
+<div class="ambient-glow"></div>
 
-        <span class="reactor">
-          <span class="reactor-grid"></span>
-          <span class="reactor-centre"></span>
-        </span>
+<div class="ring ring-outer"></div>
 
-      </button>
+<div class="ring ring-middle"></div>
 
-      <div class="identity">JARVIS</div>
+<div class="ring ring-inner"></div>
 
-      <div class="state">ONLINE</div>
+<div class="orbit orbit-one">
+<div class="particle"></div>
+</div>
 
-      <div class="instruction">
-        TAP CORE TO ACTIVATE
-      </div>
-      
-      <section id="command-panel" class="command-panel" hidden>
+<div class="orbit orbit-two">
+<div class="particle"></div>
+</div>
 
-  <form id="command-form">
+<div class="reactor">
 
-    <label for="command-input">
-      COMMAND
-    </label>
+<div class="reactor-grid"></div>
 
-    <div class="command-entry">
+<div class="reactor-centre"></div>
 
-      <input
-        id="command-input"
-        type="text"
-        placeholder="Give JARVIS a task"
-        autocomplete="off"
-        enterkeyhint="done"
-      >
+</div>
 
-      <button
-        id="command-submit"
-        type="submit"
-        aria-label="Submit command"
-      >
-        ↑
-      </button>
+</button>
 
-    </div>
+<div class="identity">
+JARVIS
+</div>
 
-  </form>
+<div class="state">
+ONLINE
+</div>
 
-  <div id="task-result" class="task-result" hidden>
+<div class="instruction">
+TAP CORE TO ACTIVATE
+</div>
 
-    <span class="task-label">
-      CURRENT TASK
-    </span>
+</main>
 
-    <strong id="task-text"></strong>
+<section
+id="command-panel"
+class="command-panel"
+hidden>
 
-  </div>
+<form id="command-form">
+
+<label for="command-input">
+
+COMMAND
+
+</label>
+
+<div class="command-entry">
+
+<input
+
+id="command-input"
+
+type="text"
+
+placeholder="Give JARVIS a task"
+
+autocomplete="off"
+
+enterkeyhint="done"
+
+>
+
+<button
+
+id="command-submit"
+
+type="submit"
+
+aria-label="Submit command"
+
+>
+
+↑
+
+</button>
+
+</div>
+
+</form>
+
+<div
+id="task-result"
+class="task-result"
+hidden>
+
+<span class="task-label">
+
+CURRENT TASK
+
+</span>
+
+<strong id="task-text">
+
+TEST
+
+</strong>
+
+</div>
 
 </section>
-    </main>
 
-  </div>
+</div>
 
-  <link rel="stylesheet" href="./style.css?v=6">
+<script src="./app.js?v=6"></script>
 
 </body>
+
 </html>
