@@ -3,71 +3,66 @@
     "name": "JARVIS OS",
     "status": "ONLINE",
     "mode": "BUILD",
-    "version": "0.2"
+    "version": "0.3"
   },
-
   "user": {
     "name": "Malcolm",
     "preferredAddress": "Sir"
   },
-
   "activeProject": {
     "name": "JARVIS OS",
-    "milestone": "Working Prototype",
-    "progress": 40
+    "milestone": "Shortcut Sync Stabilisation",
+    "progress": 55
   },
-
   "tasks": [
     {
       "id": "task-001",
-      "title": "Connect JARVIS to Apple Shortcuts",
+      "title": "Verify Apple Shortcuts live import",
       "priority": 5,
       "urgency": 5,
       "impact": 5,
-      "effort": 3,
+      "effort": 2,
       "status": "AVAILABLE"
     },
     {
       "id": "task-002",
-      "title": "Add reliable task memory",
+      "title": "Connect live calendar data",
       "priority": 4,
-      "urgency": 3,
+      "urgency": 4,
       "impact": 5,
       "effort": 3,
       "status": "AVAILABLE"
     },
     {
       "id": "task-003",
-      "title": "Connect Reminders",
+      "title": "Connect Outlook briefing",
       "priority": 4,
       "urgency": 3,
-      "impact": 4,
-      "effort": 2,
+      "impact": 5,
+      "effort": 4,
       "status": "AVAILABLE"
     },
     {
       "id": "task-004",
-      "title": "Improve the interface",
-      "priority": 2,
-      "urgency": 1,
-      "impact": 2,
+      "title": "Add voice command handoff",
+      "priority": 3,
+      "urgency": 2,
+      "impact": 5,
       "effort": 4,
       "status": "AVAILABLE"
     }
   ],
-
   "decision": {
     "selectedTask": "",
     "reason": "",
     "lastEvaluated": ""
   },
-
   "services": {
     "voice": "NOT CONNECTED",
-    "memory": "STATIC",
-    "calendar": "NOT CONNECTED",
+    "memory": "LOCAL",
+    "calendar": "URL IMPORT",
     "outlook": "NOT CONNECTED",
-    "reminders": "NOT CONNECTED",
-    "shortcuts": "TESTING"
+    "reminders": "URL IMPORT",
+    "shortcuts": "READY FOR TEST"
   }
 }
