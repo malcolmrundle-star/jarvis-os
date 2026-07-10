@@ -272,10 +272,14 @@ const systemPanelTitle =
     showServices
   );
 
-  core?.addEventListener(
+    core?.addEventListener(
     "click",
     runReminderRefresh
   );
+
+  systemPanelClose?.addEventListener("click", () => {
+    systemPanel.hidden = true;
+  });
 
   updateClock();
 
@@ -287,7 +291,4 @@ const systemPanelTitle =
   setState("ONLINE");
 
   readReminderDataFromURL();
-});
-systemPanelClose?.addEventListener("click", () => {
-  systemPanel.hidden = true;
 });
