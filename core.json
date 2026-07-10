@@ -15,7 +15,7 @@
     "progress": 72
   },
   "mission": {
-    "currentTask": "Connect JARVIS interface to CORE",
+    "currentTask": "TEST CORE CONNECTION",
     "nextAction": "Load CORE state into the app",
     "priority": "HIGH"
   },
