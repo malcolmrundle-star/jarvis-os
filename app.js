@@ -200,18 +200,20 @@ summaryOutlook: document.getElementById("summary-outlook"),
   const calendar = loadCalendar();
 
   if (elements.summaryReminders) {
-    elements.summaryReminders.textContent = `${reminders.length} LOADED`;
+    elements.summaryReminders.textContent =
+      String(reminders.length);
   }
 
   if (elements.summaryCalendar) {
-    elements.summaryCalendar.textContent = `${calendar.length} LOADED`;
+    elements.summaryCalendar.textContent =
+      String(calendar.length);
   }
 
   if (elements.summaryOutlook) {
-    elements.summaryOutlook.textContent = "NOT CONNECTED";
+    elements.summaryOutlook.textContent =
+      "OFFLINE";
   }
 }
-
   function importLiveDataFromURL() {
     const params = new URLSearchParams(window.location.search);
     let imported = false;
