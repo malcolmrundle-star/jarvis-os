@@ -1302,3 +1302,70 @@ body:has(#core[data-state="complete"]) .state {
     font-size: 0.72rem;
   }
 }
+/* ========================================
+   RESTORE ORIGINAL JARVIS LAYOUT
+   ======================================== */
+
+.live-summary,
+.summary-card,
+.summary-item {
+  display: none !important;
+}
+
+.presence {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.identity {
+  margin-top: 24px;
+}
+
+.state {
+  margin-top: 16px;
+}
+
+.instruction {
+  margin-top: 24px;
+  margin-bottom: 36px;
+}
+
+.briefing-panel {
+  width: calc(100% - 40px);
+  margin: 0 auto 22px !important;
+}
+
+.control-bar {
+  width: calc(100% - 40px);
+  margin: 0 auto;
+}
+
+#command-form {
+  width: calc(100% - 40px);
+  margin: 0 auto;
+}
+
+@media (max-width: 430px) {
+  .identity {
+    margin-top: 18px;
+  }
+
+  .state {
+    margin-top: 12px;
+  }
+
+  .instruction {
+    margin-top: 18px;
+    margin-bottom: 28px;
+  }
+
+  .briefing-panel {
+    width: calc(100% - 28px);
+    margin-bottom: 18px !important;
+  }
+
+  .control-bar,
+  #command-form {
+    width: calc(100% - 28px);
+  }
+}
