@@ -1,0 +1,29 @@
+{
+  "system": {
+    "name": "JARVIS OS",
+    "status": "ONLINE",
+    "mode": "DEVELOPMENT",
+    "version": "0.2"
+  },
+  "user": {
+    "name": "Malcolm",
+    "preferredAddress": "Sir"
+  },
+  "activeProject": {
+    "name": "JARVIS OS",
+    "milestone": "Core Integration",
+    "progress": 72
+  },
+  "mission": {
+    "currentTask": "Connect JARVIS interface to CORE",
+    "nextAction": "Load CORE state into the app",
+    "priority": "HIGH"
+  },
+  "services": {
+    "voice": "NOT CONNECTED",
+    "memory": "STATIC",
+    "calendar": "NOT CONNECTED",
+    "outlook": "NOT CONNECTED",
+    "tasks": "NOT CONNECTED"
+  }
+}
