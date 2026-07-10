@@ -119,26 +119,32 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  function showReminders() {
-    openPanel(
-      "REMINDERS",
-      `
-        <div class="diagnostic-row">
-          <span>1</span>
-          <span>Finish JARVIS dashboard</span>
-        </div>
+    function showReminders() {
+    const reminders = loadReminders();
 
-        <div class="diagnostic-row">
-          <span>2</span>
-          <span>Connect Apple Reminders</span>
-        </div>
+    const content = reminders.length
+      ? reminders
+          .map((reminder, index) => `
+            <div class="diagnostic-row">
+              <span>${index + 1}</span>
+              <span>${escapeHTML(reminder)}</span>
+            </div>
+          `)
+          .join("")
+      : `
+          <div class="diagnostic-row">
+            <span>STATUS</span>
+            <span>No JARVIS reminders loaded</span>
+          </div>
+        `;
 
-        <div class="diagnostic-row">
-          <span>3</span>
-          <span>Test Home Screen launch</span>
-        </div>
-      `
-    );
+    openPanel("REMINDERS", content);
+  }
+
+  function escapeHTML(value) {
+    const element = document.createElement("div");
+    element.textContent = value;
+    return element.innerHTML;
   }
 
   function showCalendar() {
