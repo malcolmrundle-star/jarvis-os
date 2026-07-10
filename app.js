@@ -1,52 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const REMINDERS_KEY = "jarvis-reminders-v1";
-  
-const systemPanelClose =
-  document.getElementById("system-panel-close");
+  const timeElement = document.getElementById("time");
+  const core = document.getElementById("core");
+  const stateLabel = document.querySelector(".state");
+  const instruction = document.querySelector(".instruction");
 
-const systemPanelTitle =
-  document.getElementById("system-panel-title");
-  const timeElement =
-    document.getElementById("time");
+  const refreshButton = document.getElementById("refresh-button");
+  const briefingButton = document.getElementById("briefing-button");
+  const remindersButton = document.getElementById("reminders-button");
+  const calendarButton = document.getElementById("calendar-button");
+  const outlookButton = document.getElementById("outlook-button");
 
-  const core =
-    document.getElementById("core");
-
-  const stateLabel =
-    document.querySelector(".state");
-
-  const instruction =
-    document.querySelector(".instruction");
-
-  const remindersList =
-    document.getElementById("reminders-list");
-
-  const briefingStatus =
-    document.getElementById("briefing-status");
-
-  const refreshButton =
-    document.getElementById("refresh-button");
-
-  const diagnosticsButton =
-    document.getElementById("diagnostics-button");
-
-  const servicesButton =
-    document.getElementById("services-button");
-
-  const systemPanel =
-    document.getElementById("system-panel");
-
-  const systemPanelContent =
-    document.getElementById("system-panel-content");
+  const systemPanel = document.getElementById("system-panel");
+  const systemPanelTitle = document.getElementById("system-panel-title");
+  const systemPanelContent = document.getElementById("system-panel-content");
+  const systemPanelClose = document.getElementById("system-panel-close");
 
   function updateClock() {
     if (!timeElement) return;
 
-    timeElement.textContent =
-      new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+    timeElement.textContent = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
   }
 
   function setState(state) {
@@ -55,240 +30,178 @@ const systemPanelTitle =
     }
 
     if (core) {
-      core.dataset.state =
-        state.toLowerCase();
+      core.dataset.state = state.toLowerCase();
     }
 
     const messages = {
       ONLINE: "SYSTEM READY",
-      THINKING: "READING REMINDERS",
-      COMPLETE: "BRIEFING UPDATED",
-      ERROR: "SERVICE ERROR"
+      THINKING: "PROCESSING",
+      COMPLETE: "UPDATED"
     };
 
     if (instruction) {
-      instruction.textContent =
-        messages[state] || "";
+      instruction.textContent = messages[state] || "";
     }
   }
 
-  function saveReminders(reminders) {
-    localStorage.setItem(
-      REMINDERS_KEY,
-      JSON.stringify(reminders)
+  function openPanel(title, content) {
+    if (!systemPanel || !systemPanelTitle || !systemPanelContent) {
+      return;
+    }
+
+    systemPanelTitle.textContent = title;
+    systemPanelContent.innerHTML = content;
+    systemPanel.hidden = false;
+  }
+
+  function showBriefing() {
+    openPanel(
+      "DAILY BRIEFING",
+      `
+        <div class="diagnostic-row">
+          <span>MISSION</span>
+          <span>Build JARVIS OS</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>PRIORITY</span>
+          <span class="diagnostic-value">Connect real services</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>NEXT ACTION</span>
+          <span>Test dashboard controls</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>MODE</span>
+          <span>BUILD</span>
+        </div>
+      `
     );
   }
 
-  function loadSavedReminders() {
-    try {
-      return JSON.parse(
-        localStorage.getItem(REMINDERS_KEY)
-      ) || [];
-    } catch {
-      return [];
-    }
+  function showReminders() {
+    openPanel(
+      "REMINDERS",
+      `
+        <div class="diagnostic-row">
+          <span>1</span>
+          <span>Finish JARVIS dashboard</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>2</span>
+          <span>Connect Apple Reminders</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>3</span>
+          <span>Test Home Screen launch</span>
+        </div>
+      `
+    );
   }
 
-  function renderReminders(reminders) {
-    if (!remindersList) return;
+  function showCalendar() {
+    openPanel(
+      "CALENDAR",
+      `
+        <div class="diagnostic-row">
+          <span>TODAY</span>
+          <span>No events loaded</span>
+        </div>
 
-    if (!reminders.length) {
-      remindersList.textContent =
-        "No incomplete reminders.";
-      return;
-    }
-
-    remindersList.innerHTML =
-      reminders
-        .map(reminder => {
-          return `
-            <div class="reminder-item">
-              ${escapeHTML(reminder)}
-            </div>
-          `;
-        })
-        .join("");
+        <div class="diagnostic-row">
+          <span>NEXT</span>
+          <span>Calendar integration pending</span>
+        </div>
+      `
+    );
   }
 
-  function escapeHTML(value) {
-    const div = document.createElement("div");
-    div.textContent = value;
-    return div.innerHTML;
+  function showOutlook() {
+    openPanel(
+      "OUTLOOK",
+      `
+        <div class="diagnostic-row">
+          <span>STATUS</span>
+          <span>Not connected</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>IMPORTANT</span>
+          <span>0 loaded</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>NEXT</span>
+          <span>Connect email briefing</span>
+        </div>
+      `
+    );
   }
 
-  function readReminderDataFromURL() {
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
-
-    const encoded =
-      params.get("reminders");
-
-    if (!encoded) {
-      renderReminders(
-        loadSavedReminders()
-      );
-      return;
-    }
-
-    try {
-      const decoded =
-        decodeURIComponent(encoded);
-
-      const reminders =
-        decoded
-          .split("|||")
-          .map(item => item.trim())
-          .filter(Boolean);
-
-      saveReminders(reminders);
-      renderReminders(reminders);
-
-      if (briefingStatus) {
-        briefingStatus.textContent =
-          "UPDATED";
-      }
-
-      setState("COMPLETE");
-
-      window.history.replaceState(
-        {},
-        document.title,
-        window.location.pathname
-      );
-
-      setTimeout(() => {
-        setState("ONLINE");
-      }, 1800);
-    } catch (error) {
-      console.error(
-        "Reminder import failed:",
-        error
-      );
-
-      setState("ERROR");
-    }
-  }
-
-  function runReminderRefresh() {
+  async function runRefresh() {
     setState("THINKING");
 
-    if (briefingStatus) {
-      briefingStatus.textContent =
-        "REFRESHING";
-    }
+    await new Promise(resolve => {
+      setTimeout(resolve, 900);
+    });
 
-    const shortcutURL =
-      "shortcuts://run-shortcut" +
-      "?name=" +
-      encodeURIComponent(
-        "JARVIS Refresh Reminders"
-      );
+    setState("COMPLETE");
 
-    window.location.href =
-      shortcutURL;
+    openPanel(
+      "SYSTEM REFRESH",
+      `
+        <div class="diagnostic-row">
+          <span>CORE</span>
+          <span class="diagnostic-value">ONLINE</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>MEMORY</span>
+          <span class="diagnostic-value">ONLINE</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>REMINDERS</span>
+          <span>STATIC DATA</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>CALENDAR</span>
+          <span>NOT CONNECTED</span>
+        </div>
+
+        <div class="diagnostic-row">
+          <span>OUTLOOK</span>
+          <span>NOT CONNECTED</span>
+        </div>
+      `
+    );
+
+    setTimeout(() => {
+      setState("ONLINE");
+    }, 1200);
   }
 
-  function showDiagnostics() {
-  const reminders = loadSavedReminders();
-
-  if (systemPanelTitle) {
-    systemPanelTitle.textContent = "DIAGNOSTICS";
-  }
-
-  systemPanelContent.innerHTML = `
-    <div class="diagnostic-row">
-      <span>CORE</span>
-      <span class="diagnostic-value">ONLINE</span>
-    </div>
-
-    <div class="diagnostic-row">
-      <span>MEMORY</span>
-      <span class="diagnostic-value">ONLINE</span>
-    </div>
-
-    <div class="diagnostic-row">
-      <span>REMINDERS</span>
-      <span class="diagnostic-value">${reminders.length} LOADED</span>
-    </div>
-
-    <div class="diagnostic-row">
-      <span>CALENDAR</span>
-      <span>NOT CONNECTED</span>
-    </div>
-
-    <div class="diagnostic-row">
-      <span>OUTLOOK</span>
-      <span>NOT CONNECTED</span>
-    </div>
-  `;
-
-  systemPanel.hidden = false;
-}
-
-  function showServices() {
-  if (systemPanelTitle) {
-    systemPanelTitle.textContent = "SERVICES";
-  }
-
-  systemPanelContent.innerHTML = `
-    <div class="diagnostic-row">
-      <span>REMINDERS</span>
-      <span class="diagnostic-value">CONNECTED</span>
-    </div>
-
-    <div class="diagnostic-row">
-      <span>CALENDAR</span>
-      <span>COMING NEXT</span>
-    </div>
-
-    <div class="diagnostic-row">
-      <span>OUTLOOK</span>
-      <span>COMING NEXT</span>
-    </div>
-
-    <div class="diagnostic-row">
-      <span>VOICE</span>
-      <span>PLANNED</span>
-    </div>
-  `;
-
-  systemPanel.hidden = false;
-}
-
-  refreshButton?.addEventListener(
-    "click",
-    runReminderRefresh
-  );
-
-  diagnosticsButton?.addEventListener(
-    "click",
-    showDiagnostics
-  );
-
-  servicesButton?.addEventListener(
-    "click",
-    showServices
-  );
-
-    core?.addEventListener(
-    "click",
-    runReminderRefresh
-  );
+  refreshButton?.addEventListener("click", runRefresh);
+  briefingButton?.addEventListener("click", showBriefing);
+  remindersButton?.addEventListener("click", showReminders);
+  calendarButton?.addEventListener("click", showCalendar);
+  outlookButton?.addEventListener("click", showOutlook);
 
   systemPanelClose?.addEventListener("click", () => {
-    systemPanel.hidden = true;
+    if (systemPanel) {
+      systemPanel.hidden = true;
+    }
   });
 
-  updateClock();
+  core?.addEventListener("click", showBriefing);
 
-  setInterval(
-    updateClock,
-    1000
-  );
+  updateClock();
+  setInterval(updateClock, 1000);
 
   setState("ONLINE");
-
-  readReminderDataFromURL();
 });
