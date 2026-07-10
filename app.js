@@ -463,6 +463,7 @@ summaryOutlook: document.getElementById("summary-outlook"),
   renderCurrentTask();
   importLiveDataFromURL();
   renderBriefing();
+  renderLiveSummary();
 
   if (!getLastSync()) {
     setState("ONLINE");
