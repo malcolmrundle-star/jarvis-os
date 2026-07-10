@@ -1,4 +1,42 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const REMINDERS_KEY = "jarvis-live-reminders-v1";
+
+  function saveReminders(reminders) {
+    localStorage.setItem(
+      REMINDERS_KEY,
+      JSON.stringify(reminders)
+    );
+  }
+
+  function loadReminders() {
+    try {
+      return JSON.parse(
+        localStorage.getItem(REMINDERS_KEY)
+      ) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function importRemindersFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const reminderData = params.get("reminders");
+
+    if (!reminderData) return;
+
+    const reminders = reminderData
+      .split("|||")
+      .map(item => item.trim())
+      .filter(Boolean);
+
+    saveReminders(reminders);
+
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
+  }
   const timeElement = document.getElementById("time");
   const core = document.getElementById("core");
   const stateLabel = document.querySelector(".state");
